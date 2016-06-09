@@ -1,0 +1,125 @@
+@startuml
+
+
+package python << frame >> {
+together {
+class main  << (M,cyan) >> {
++open_csv()
+}
+
+class optimization  << (M,cyan) >> {
++open_csv()
++optimizer()
++plot_output()
+}
+}
+class evaluation  << (F,yellow) >> {
++objective_function()
+..
++append_output_to_file()
++odb_viewer()
++pickle_input()
++read_results()
++run()
++stl_viewer()
+}
+
+class Class_Truss {
+Class Truss
+..
++find_points_in_space()
++find_points_in_plane()
+..
+name
+cell_size
+cells
+nodes
+number_of_cells
+}
+
+class Class_Cell {
+Class Cell
+..
+name
+nodes
+connections
+pore_size
+strut_thicknesses
+}
+
+class library_truss << (C,red) >> {
++generate_truss()
+}
+
+class library_cell << (C,red) >> {
++generate_cell()
+}
+
+
+class Class_Script{
++add_cell_to_assembly()
++add_strut_to_cell()
++assign_material_to_wire()
++create_static_step()
++cut_off_borders()
++deactivate_boundary_conditions()
++deactivate_loadings()
++define_boundary_conditions()
++define_loadings()
++define_material()
++delete_instances()
++delete_struts()
++generate_cell()
++generate_strut()
++generate_wireframe()
++get_area()
++merge()
++mesh_part()
++read_odb_step()
++read_odb_step2()
++request_field_output()
++submit()
+==
+Class Script
+..
++evaluate()
++export_stl()
++generate_solid()
++pickle_dump()
+..
+filename
+material
+truss
+}
+
+main --> evaluation : objective_function(inputs,options)
+optimization --> evaluation : def optimizer(inputs,options, optimization_variables) \n objective_function(inputs*, options)
+evaluation o--o Class_Script
+evaluation --> library_truss : generate_truss()
+library_truss -left-> library_cell : generate_cell()
+Class_Truss o--o library_truss
+Class_Cell o--o library_cell
+}
+
+
+package abaqus << frame >> {
+class temp_output << (S,orange >> {
+}
+class abaqus_evaluation << (.,orchid) >> {
+abaqus cae nogui=temp_output.py
+}
+class displacements << (.,orchid) >> {
+}
+
+
+evaluation --|> temp_output : generate script
+temp_output --> abaqus_evaluation : run simulation
+abaqus_evaluation --> displacements : serialize displacements
+displacements --|> evaluation : read output
+}
+package output << frame >> {
+evaluation --|> output.csv : save as
+evaluation --|> output.pickle : save as
+}
+evaluation --> optimization : return fitness
+@enduml
