@@ -5,7 +5,7 @@ from Class_Truss import Truss
 from library_cell import generate_cell
 
 
-def generate_truss(truss_name, affix, cell_size, strut_thicknesses, number_of_cells):
+def generate_truss(truss_name, affix, cell_size, strut_thicknesses, number_of_cells, cell_ratio):
     # NODES: Describe the nodes and their affiliated cells in cartesian coordinates.
     cells = list()
     nodes = list()
@@ -14,16 +14,16 @@ def generate_truss(truss_name, affix, cell_size, strut_thicknesses, number_of_ce
         truss_name == "face_diagonal_cubes" or truss_name == "octetrahedrons" or truss_name == "void_octetrahedrons" or
         truss_name == "templar_crosses" or truss_name == "templar_alt_crosses"):
         cells.append(generate_cell(cell_name=truss_name[:len(truss_name) - 1], affix="",
-                                   strut_thicknesses=strut_thicknesses, cell_size=cell_size))
+                                   strut_thicknesses=strut_thicknesses, cell_size=cell_size, ratio=cell_ratio))
         for x in range(0, number_of_cells):
             for y in range(0, number_of_cells):
                 for z in range(0, number_of_cells):
                     nodes.append([x * cell_size, y * cell_size, z * cell_size, cells[0]])
     elif truss_name == "face_diagonal_cubes_alt":
         cells.append(generate_cell(cell_name="face_diagonal_cube", affix="",
-                                   strut_thicknesses=strut_thicknesses, cell_size=cell_size))
+                                   strut_thicknesses=strut_thicknesses, cell_size=cell_size, ratio=cell_ratio))
         cells.append(generate_cell(cell_name="face_diagonal_cube_inv", affix="",
-                                   strut_thicknesses=strut_thicknesses, cell_size=cell_size))
+                                   strut_thicknesses=strut_thicknesses, cell_size=cell_size, ratio=cell_ratio))
 
         for x in range(0, number_of_cells):
             for y in range(0, number_of_cells):
@@ -34,9 +34,9 @@ def generate_truss(truss_name, affix, cell_size, strut_thicknesses, number_of_ce
                         nodes.append([x * cell_size, y * cell_size, z * cell_size, cells[1]])
     elif truss_name == "templar_alt2_crosses":
         cells.append(generate_cell(cell_name="templar_alt2_cross", affix="",
-                                   strut_thicknesses=strut_thicknesses, cell_size=cell_size))
+                                   strut_thicknesses=strut_thicknesses, cell_size=cell_size, ratio=cell_ratio))
         cells.append(generate_cell(cell_name="templar_alt2_cross_inv", affix="",
-                                   strut_thicknesses=strut_thicknesses, cell_size=cell_size))
+                                   strut_thicknesses=strut_thicknesses, cell_size=cell_size, ratio=cell_ratio))
 
         for x in range(0, number_of_cells):
             for y in range(0, number_of_cells):
@@ -47,37 +47,41 @@ def generate_truss(truss_name, affix, cell_size, strut_thicknesses, number_of_ce
                         nodes.append([x * cell_size, y * cell_size, z * cell_size, cells[1]])
     elif truss_name == "pyramids":
         cells.append(generate_cell(cell_name="pyramid", affix="",
-                                   strut_thicknesses=strut_thicknesses, cell_size=cell_size))
+                                   strut_thicknesses=strut_thicknesses, cell_size=cell_size, ratio=cell_ratio))
         cells.append(generate_cell(cell_name="pyramid_inv", affix="",
-                                   strut_thicknesses=strut_thicknesses, cell_size=cell_size))
+                                   strut_thicknesses=strut_thicknesses, cell_size=cell_size, ratio=cell_ratio))
         cells.append(generate_cell(cell_name="pyramid_twist", affix="",
-                                   strut_thicknesses=strut_thicknesses, cell_size=cell_size))
+                                   strut_thicknesses=strut_thicknesses, cell_size=cell_size, ratio=cell_ratio))
         cells.append(generate_cell(cell_name="pyramid_twist_inv", affix="",
-                                   strut_thicknesses=strut_thicknesses, cell_size=cell_size))
+                                   strut_thicknesses=strut_thicknesses, cell_size=cell_size, ratio=cell_ratio))
         for x in range(0, number_of_cells):
             for y in range(0, number_of_cells):
                 for z in range(0, number_of_cells):
-                    if z == 0 or z == 2:
-                        if (x + y) % 2 == 0 and x != 1:
-                            nodes.append([x * cell_size, y * cell_size, z * cell_size, cells[0]])
-                        elif x == 1 and y == 1:
-                            nodes.append([x * cell_size, y * cell_size, z * cell_size, cells[1]])
-                        elif y == 1 and x != 1:
-                            nodes.append([x * cell_size, y * cell_size, z * cell_size, cells[2]])
-                        elif x == 1 and y != 1:
-                            nodes.append([x * cell_size, y * cell_size, z * cell_size, cells[3]])
-                    if z == 1:
-                        if (x + y) % 2 == 0 and x != 1:
-                            nodes.append([x * cell_size, y * cell_size, z * cell_size, cells[1]])
-                        elif x == 1 and y == 1:
-                            nodes.append([x * cell_size, y * cell_size, z * cell_size, cells[0]])
-                        elif y == 1 and x != 1:
-                            nodes.append([x * cell_size, y * cell_size, z * cell_size, cells[3]])
-                        elif x == 1 and y != 1:
-                            nodes.append([x * cell_size, y * cell_size, z * cell_size, cells[2]])
+                    if z % 2 == 0:
+                        if y % 2 == 0:
+                            if x % 2 == 0:
+                                nodes.append([x * cell_size, y * cell_size, z * cell_size, cells[0]])
+                            else:
+                                nodes.append([x * cell_size, y * cell_size, z * cell_size, cells[3]])
+                        else:
+                            if x % 2 == 0:
+                                nodes.append([x * cell_size, y * cell_size, z * cell_size, cells[2]])
+                            else:
+                                nodes.append([x * cell_size, y * cell_size, z * cell_size, cells[1]])
+                    else:
+                        if y % 2 == 0:
+                            if x % 2 == 0:
+                                nodes.append([x * cell_size, y * cell_size, z * cell_size, cells[1]])
+                            else:
+                                nodes.append([x * cell_size, y * cell_size, z * cell_size, cells[2]])
+                        else:
+                            if x % 2 == 0:
+                                nodes.append([x * cell_size, y * cell_size, z * cell_size, cells[3]])
+                            else:
+                                nodes.append([x * cell_size, y * cell_size, z * cell_size, cells[0]])
     elif truss_name == "file_super_truss":
         cells.append(generate_cell(cell_name="file_super_truss", affix="",
-                                   strut_thicknesses=[1], cell_size=1))
+                                   strut_thicknesses=[1], cell_size=1, ratio=cell_ratio))
         nodes.append([0, 0, 0, cells[0]])
 
     else:

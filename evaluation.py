@@ -57,7 +57,7 @@ def stl_viewer(script):
 
 
 # READS IN THE DISPLACEMENTS OF THE SIDES OF THE CUBES FOR EACH STEP/LOADING CONDITION AND CALCULATES COMPLIANCE FROM IT
-def read_results(script):
+def read_results(script, x):
     def read_stress(result, name, plane, direction):
         list_of_coordinates = list()
         for point in result[name][plane]:
@@ -93,8 +93,10 @@ def read_results(script):
     applied_force = 1
 
     output = dict()
+    output['X'] = x
     output['Cell_Size'] = script.truss.cell_size
     output['Strut_Thickness'] = script.truss.cells[0].strut_thicknesses[0]
+    output['Truss_Name'] = script.truss.name
     output['Pore_size'] = list()
     for cell in script.truss.cells:
         output['Pore_size'].append(cell.pore_size)
@@ -202,14 +204,14 @@ def read_results(script):
     print("Compliance Matrix [1/GPa]: ")
     numpy.set_printoptions(precision=2, suppress=True)
     print(numpy.multiply(output['Compliance'], 1e9))
-    print("#############################################################################################")
     return output
 
 
 # APPENDS RESULTS TO A CSV FILE AND A SERIALIZED PICKLE FILE
 def append_output_to_file(output, output_file):
     result_file = open(output_file, 'a')
-    result_file.write(str(round(output['Step'])) + ", " +
+    result_file.write(str(output['Step']) + ", " +
+                      str(output['Truss_Name']) + ", " +
                       str(round(output['Fitness'], 3)) + ", " +
                       str(round(output['Cell_Size'] * 1e3, 3)) + ", " +
                       str(round(output['Strut_Thickness'] * 1e6, 3)) + ", ")
@@ -219,7 +221,7 @@ def append_output_to_file(output, output_file):
             result_file.write(str(round(pore * 1e6, 3)) + ", ")
             counter += 1
     for i in range(0, 4 - counter):
-        result_file.write(", ")
+        result_file.write("None, ")
     result_file.write(str(round(output['Sigma_z'] * 1e-6, 3)) + ", " +
                       str(round(output['Sigma_y'] * 1e-6, 3)) + ", " +
                       str(round(output['Sigma_x'] * 1e-6, 3)) + ", " +
@@ -243,8 +245,9 @@ def append_output_to_file(output, output_file):
                           str(round(output['Surface_Area'] * 1e6, 3)) + ", "
                           )
     except KeyError:
-        pass
+        result_file.write("None, None, None, None, ")
 
+    result_file.write(str(output['X']))
     result_file.write("\n")
     result_file.close()
 
@@ -272,48 +275,49 @@ universal_counter = 0
 
 
 ####################################################################################################################################################################################
-# BEGIN OF PROGRAM
+# BEGIN OF function
 
 
-def objective_function(x, number_of_cells, cell_size, min_thickness, truss_name, directory, job_name, output_file, options):
+def objective_function(inputs, options):
     global universal_counter
     universal_counter += 1  # Careful this is global
 
     # PRINT INFO FROM INPUT
     print("Counter: " + str(universal_counter))
-    print("Truss: " + str(truss_name))
-    print("X: " + str(x))
-    print("Number of Cells: " + str(number_of_cells))
-    print("Cell Size: " + str(round(cell_size * 1e3, 3)) + " mm")
-    print("Total Size: " + str(round(number_of_cells * cell_size * 1e3, 3)) + " mm\n\n\n")
+    print("Truss: " + str(inputs['truss_name']))
+    print("Strut Thickness Multiplier: " + str(inputs['strut_thickness_multiplicator']))
+    print("Number of Cells: " + str(inputs['number_of_cells']))
+    print("Cell Size: " + str(round(inputs['cell_size'] * 1e3, 3)) + " mm")
+    print("Total Size: " + str(round(inputs['number_of_cells'] * inputs['cell_size'] * 1e3, 3)) + " mm")
+    print("Cell Ratio: " + str(inputs['cell_ratio']) + "\n\n\n")
 
-    # MULTIPLY X WITH min_thickness
+    # MULTIPLY strut_thicknesses WITH min_thickness
     thicknesses = list()
     fitness = 0
-    for multiplicator in x:
+    for multiplicator in inputs['strut_thickness_multiplicator']:
         if multiplicator > 0:
-            thicknesses.append(min_thickness * multiplicator)
+            thicknesses.append(inputs['strut_min_thickness'] * multiplicator)
         else:    # Blocks negative values for strut thicknesses
-            thicknesses.append(abs(min_thickness * multiplicator))
+            thicknesses.append(abs(inputs['strut_min_thickness'] * multiplicator))
             fitness += 1e9 * abs(multiplicator)
     filename = list()
-    filename.append(directory)
-    filename.append(job_name + str(universal_counter))
+    filename.append(inputs['calculating_directory'])
+    filename.append(inputs['job_name'] + str(universal_counter))
     filename.append(".py")
     # GENERATE TRUSS
-    truss = generate_truss(truss_name=truss_name, affix="",
-                           cell_size=cell_size, strut_thicknesses=thicknesses, number_of_cells=number_of_cells)
+    truss = generate_truss(truss_name=inputs['truss_name'], affix="",
+                           cell_size=inputs['cell_size'], strut_thicknesses=thicknesses, number_of_cells=inputs['number_of_cells'], cell_ratio=inputs['cell_ratio'])
 
     # GENERATE SCRIPT
 
     # initialize.
-    model_script = Script(filename=filename, truss=truss, material=options['material'], abaqus_version=options['abaqus_version'])
+    model_script = Script(filename=filename, truss=truss, material=inputs['material'], abaqus_version=options['abaqus_version'])
     # generate wireframe and evaluate.
     model_script.evaluate(create_steps=options['create_steps'], submit_job=options['submit_job'],
-                          read_output=options['read_output'], number_of_cells=number_of_cells)
+                          read_output=options['read_output'], number_of_cells=inputs['number_of_cells'])
     # generate solid and export to stl.
     if options['stl_generate']:
-        model_script.generate_solid(strut_name=options['strut_cross_section'], cutoff=options['cutoff'], number_of_cells=number_of_cells)
+        model_script.generate_solid(strut_name=options['strut_cross_section'], cutoff=options['cutoff'], number_of_cells=inputs['number_of_cells'])
         model_script.export_stl()
 
     # saves the results from the simulation in a serialized pickle file.
@@ -330,31 +334,38 @@ def objective_function(x, number_of_cells, cell_size, min_thickness, truss_name,
 
     # CALCULATE COMPLIANCE FROM DISPLACEMENTS FROM THE SIMULATION
     if options['read_output']:
-        output = read_results(model_script)
+        output = read_results(model_script, inputs['strut_thickness_multiplicator'])
     else:
         output = dict()
 
     # CALCULATE FITNESS
-    try:
-        fitness += ( abs(output['Sigma_z'] - 15e9) / 100e6 + abs(output['Sigma_y'] - 11.5e9) / 100e6 + abs(output['Sigma_x'] - 11.5e9) / 100e6)
-    except KeyError:
-        print("No Fitness")
-        fitness = 1e9
-    try:
-        fitness += (output['Porosity'] - 0.4)
-    except KeyError:
-        print("Fitness is without porosity")
-    for values in x:
-        fitness += abs(1 / abs(values - 0.00050) * 1e-10)  # To encourage bigger struts and kill strut solutions equal 0
+
+    # Fit Bone Stiffness:
+    if False:
+        try:
+            fitness += (abs(output['Sigma_z'] - 15e9) / 100e6 + abs(output['Sigma_y'] - 11.5e9) / 100e6 + abs(output['Sigma_x'] - 11.5e9) / 100e6)
+        except KeyError:
+            print("No Fitness")
+            fitness = 1e9
+        try:
+            fitness += (output['Porosity'] - 0.4)
+        except KeyError:
+            print("Fitness is without porosity")
+        for values in inputs['strut_thickness_multiplicator']:
+            fitness += abs(1 / abs(values - 0.00050) * 1e-10)  # To encourage bigger struts and kill strut solutions equal 0
+
+    # Maximize auxesis:
+    if False:
+        fitness += output['v21'] + output['v31'] + output['v32']
 
     # SAFE OUTPUT INTO CSV FILE
     if options['read_output']:
         output['Step'] = universal_counter
         output['Fitness'] = fitness
-        append_output_to_file(output, output_file)
+        append_output_to_file(output, inputs['output_file'] + '.csv')
 
     # SAFE INPUT VALUES AS A SERIALIZED PICKLE FILE
-    pickle_input(x, truss_name, str(directory) + str(job_name) + str(universal_counter) + "_input")
+    pickle_input(inputs['strut_thickness_multiplicator'], inputs['truss_name'], str(inputs['calculating_directory']) + str(inputs['job_name']) + str(universal_counter) + "_input")
 
     # PLOT FITNESS
     if options['plot_fitness']:
@@ -364,4 +375,7 @@ def objective_function(x, number_of_cells, cell_size, min_thickness, truss_name,
         pyplot.legend()
         pyplot.show()
         pyplot.pause(0.00001)
+
+    print("Fitness: " + str(fitness))
+    print("#############################################################################################")
     return fitness

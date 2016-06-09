@@ -6,9 +6,13 @@ from Class_Cell import Cell
 import csv_reader
 
 
-def generate_cell(cell_name, affix, strut_thicknesses, cell_size):
+def generate_cell(cell_name, affix, strut_thicknesses, cell_size, ratio):
     # NODES: Describe the nodes in cartesian coordinates.
-    ratio = 0.8
+    # ratio = 0.8
+    # ratio = list()
+    # ratio.append(0.3)   # 0-1    --> 0.3
+    # ratio.append(0.4)   # 0-0.5  --> 0.8
+    # ratio.append(0.05)  # 0-0.33 --> 0.15
     pore_size = list()
     if cell_name == "truncated_cuboctahedron":
         sizing = 1 / (2 * (1 + 2 * math.sqrt(2)))
@@ -104,7 +108,7 @@ def generate_cell(cell_name, affix, strut_thicknesses, cell_size):
 
     elif cell_name == "varying_truncated_cube":
         strut_length = 1 / (1 + math.sqrt(2))
-        tl = math.sqrt(2) / 2 * strut_length * ratio  # standing for truncated_length
+        tl = math.sqrt(2) / 2 * strut_length * ratio[0] / 2  # standing for truncated_length
         cell_node_coordinates = [[0, tl, 0], [tl, 0, 0], [1 - tl, 0, 0], [1, tl, 0], [1, 1 - tl, 0], [1 - tl, 1, 0],
                                  [tl, 1, 0], [0, 1 - tl, 0], [0, 0, tl], [1, 0, tl], [1, 1, tl], [0, 1, tl],
                                  [0, 0, 1 - tl], [1, 0, 1 - tl], [1, 1, 1 - tl], [0, 1, 1 - tl], [0, tl, 1], [tl, 0, 1],
@@ -371,7 +375,7 @@ def generate_cell(cell_name, affix, strut_thicknesses, cell_size):
 
     elif cell_name == "pyramid":
         # NODES: Describe the nodes in cartesian coordinates.
-        p = ratio
+        p = ratio[0]
         q = (1 - p) / 2
         cell_node_coordinates = [[-q, -q, 0], [1 + q, -q, 0], [1 + q, 1 + q, 0], [-q, 1 + q, 0],
                                  [q, q, 1], [1 - q, q, 1], [1 - q, 1 - q, 1], [q, 1 - q, 1]]
@@ -402,7 +406,7 @@ def generate_cell(cell_name, affix, strut_thicknesses, cell_size):
 
     elif cell_name == "pyramid_inv":
         # NODES: Describe the nodes in cartesian coordinates.
-        p = ratio
+        p = ratio[0]
         q = (1 - p) / 2
         cell_node_coordinates = [[q, q, 0], [1 - q, q, 0], [1 - q, 1 - q, 0], [q, 1 - q, 0],
                                  [-q, -q, 1], [1 + q, -q, 1], [1 + q, 1 + q, 1], [-q, 1 + q, 1]]
@@ -433,7 +437,7 @@ def generate_cell(cell_name, affix, strut_thicknesses, cell_size):
 
     elif cell_name == "pyramid_twist":
         # NODES: Describe the nodes in cartesian coordinates.
-        p = ratio
+        p = ratio[0]
         q = (1 - p) / 2
         cell_node_coordinates = [[-q, q, 0], [1 + q, q, 0], [1 + q, 1 - q, 0], [-q, 1 - q, 0],
                                  [q, -q, 1], [1 - q, -q, 1], [1 - q, 1 + q, 1], [q, 1 + q, 1]]
@@ -464,7 +468,7 @@ def generate_cell(cell_name, affix, strut_thicknesses, cell_size):
 
     elif cell_name == "pyramid_twist_inv":
         # NODES: Describe the nodes in cartesian coordinates.
-        p = ratio
+        p = ratio[0]
         q = (1 - p) / 2
         cell_node_coordinates = [[q, -q, 0], [1 - q, -q, 0], [1 - q, 1 + q, 0], [q, 1 + q, 0],
                                  [-q, q, 1], [1 + q, q, 1], [1 + q, 1 - q, 1], [-q, 1 - q, 1]]
@@ -639,8 +643,10 @@ def generate_cell(cell_name, affix, strut_thicknesses, cell_size):
 
     elif cell_name == "templar_crosse":
         # p = ratio
-        p = 0.3  # 0-1
-        q = 0.4  # 0-0.5
+        # p = 0.3  # 0-1
+        # q = 0.4  # 0-0.5
+        p = ratio[0]
+        q = ratio[1] / 2
         # NODES: Describe the nodes in cartesian coordinates.
         cell_node_coordinates = [[1 / 2 - q, 1 / 2, 0], [1 / 2, 1 / 2 - q, 0], [1 / 2 + q, 1 / 2, 0], [1 / 2, 1 / 2 + q, 0],
                                  [0, 1 / 2, 1 / 2 - q], [0, 1 / 2 + q, 1 / 2], [0, 1 / 2, 1 / 2 + q], [0, 1 / 2 - q, 1 / 2],
@@ -711,13 +717,16 @@ def generate_cell(cell_name, affix, strut_thicknesses, cell_size):
 
         # PORE SIZE: Describes the pore size of the Cell in standard size 1.
         # It is described by the diameter of the biggest fitting sphere in the cell
-        pore_size.append(math.sqrt(2) / 3)
+        pore_size.append(0)
 
     elif cell_name == "templar_alt_crosse":
         # p = ratio
-        p = 0.3  # 0-1
-        q = 0.4  # 0-0.5
-        r = 0.05
+        # p = 0.3   # 0-1
+        # q = 0.4   # 0-0.5
+        # r = 0.05  # 0-0.33
+        p = ratio[0]
+        q = ratio[1] / 2
+        r = ratio[2] / 2
         # NODES: Describe the nodes in cartesian coordinates.
         cell_node_coordinates = [[1 / 2 - q, 1 / 2, 0], [1 / 2, 1 / 2 - q, 0], [1 / 2 + q, 1 / 2, 0], [1 / 2, 1 / 2 + q, 0],  # 0-3
                                  [0, 1 / 2, 1 / 2 - q], [0, 1 / 2 + q, 1 / 2], [0, 1 / 2, 1 / 2 + q], [0, 1 / 2 - q, 1 / 2],  # 4-7
@@ -819,13 +828,16 @@ def generate_cell(cell_name, affix, strut_thicknesses, cell_size):
 
         # PORE SIZE: Describes the pore size of the Cell in standard size 1.
         # It is described by the diameter of the biggest fitting sphere in the cell
-        pore_size.append(math.sqrt(2) / 3)
+        pore_size.append(0)
 
     elif cell_name == "templar_alt2_cross":
         # p = ratio
-        p = 0.3  # 0-1
-        q = 0.4  # 0-0.5
-        r = 0.05
+        # p = 0.3   # 0-1
+        # q = 0.4   # 0-0.5
+        # r = 0.05  # 0-0.33
+        p = ratio[0]
+        q = ratio[1] / 2
+        r = ratio[2] / 3
         # NODES: Describe the nodes in cartesian coordinates.
         cell_node_coordinates = [[1 / 2 - q, 1 / 2 - r, 0], [1 / 2 + r, 1 / 2 - q, 0], [1 / 2 + q, 1 / 2 + r, 0], [1 / 2 - r, 1 / 2 + q, 0],  # 0-3
                                  [0, 1 / 2 + r, 1 / 2 - q], [0, 1 / 2 + q, 1 / 2 + r], [0, 1 / 2 - r, 1 / 2 + q], [0, 1 / 2 - q, 1 / 2 - r],  # 4-7
@@ -927,13 +939,16 @@ def generate_cell(cell_name, affix, strut_thicknesses, cell_size):
 
         # PORE SIZE: Describes the pore size of the Cell in standard size 1.
         # It is described by the diameter of the biggest fitting sphere in the cell
-        pore_size.append(math.sqrt(2) / 3)
+        pore_size.append(0)
 
     elif cell_name == "templar_alt2_cross_inv":
         # p = ratio
-        p = 0.3  # 0-1
-        q = 0.4  # 0-0.5
-        r = 0.05
+        # p = 0.3   # 0-1
+        # q = 0.4   # 0-0.5
+        # r = 0.05  # 0-0.33
+        p = ratio[0]
+        q = ratio[1] / 2
+        r = ratio[2] / 3
         # NODES: Describe the nodes in cartesian coordinates.
         cell_node_coordinates = [[1 / 2 - q, 1 / 2 - r, 0], [1 / 2 + r, 1 / 2 - q, 0], [1 / 2 + q, 1 / 2 + r, 0], [1 / 2 - r, 1 / 2 + q, 0],  # 0-3
                                  [0, 1 / 2 + r, 1 / 2 - q], [0, 1 / 2 + q, 1 / 2 + r], [0, 1 / 2 - r, 1 / 2 + q], [0, 1 / 2 - q, 1 / 2 - r],  # 4-7
@@ -1036,7 +1051,7 @@ def generate_cell(cell_name, affix, strut_thicknesses, cell_size):
 
         # PORE SIZE: Describes the pore size of the Cell in standard size 1.
         # It is described by the diameter of the biggest fitting sphere in the cell
-        pore_size.append(math.sqrt(2) / 3)
+        pore_size.append(0)
 
     elif cell_name == "file_super_truss":
         # NODES: Describe the nodes in cartesian coordinates.
@@ -1050,7 +1065,7 @@ def generate_cell(cell_name, affix, strut_thicknesses, cell_size):
 
         # PORE SIZE: Describes the pore size of the Cell in standard size 1.
         # It is described by the diameter of the biggest fitting sphere in the cell
-        pore_size.append(math.sqrt(2) / 3)
+        pore_size.append(0)
 
     elif cell_name == "square":
         # NODES: Describe the nodes in cartesian coordinates.
@@ -1068,7 +1083,7 @@ def generate_cell(cell_name, affix, strut_thicknesses, cell_size):
 
         # PORE SIZE: Describes the pore size of the Cell in standard size 1.
         # It is described by the diameter of the biggest fitting sphere in the cell
-        pore_size.append(math.sqrt(2))
+        pore_size.append(0)
 
     else:
         node_connections = [None, None]
@@ -1088,13 +1103,11 @@ def generate_cell(cell_name, affix, strut_thicknesses, cell_size):
     for x in range(0, len(cell_node_coordinates)):
         for y in range(0, 3):
             cell_node_coordinates[x][y] *= cell_size
-    counter = 0
-    for pore in pore_size:
+    for counter in range(0, len(pore_size)):
         pore_size[counter] *= cell_size
         pore_size[counter] -= strut_thicknesses[0]
         if pore_size[counter] < 0:
             pore_size[counter] = 0
-        counter += 1
     # GENERATE beginning and ending coordinates of each connection in cartesian coordinates.
     cell_node_connections = list()
     for connection_points in node_connections:
