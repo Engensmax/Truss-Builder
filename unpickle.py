@@ -9,7 +9,7 @@ import numpy
 # file_path = 'C://abaqus_temp/temp_optimization2_input'
 # file_path = "/abaqus_temp2/temp_optimization1_results"
 # file_path = "C:/Users/Maxe-PC2/Dropbox/Master_Thesis/outputs/dump/output_optimization_cubes_pickle"
-file_path = "C:/Users\maxe\Dropbox\Master_Thesis\outputs\dump/output_optimization_cubes_pickle"
+file_path = "C:/Users\maxe\Dropbox\Master_Thesis\outputs\optimization\BFGS\Titanium_Bone\cubes_input"
 
 with open('' + str(file_path), 'rb') as f:
     u = pickle.Unpickler(f)
@@ -30,9 +30,9 @@ if False:
     displacement = statistics.median(list_of_coordinates)
     print(str(step) + "displacement :" + str(displacement))
 
-if False:
-    print(p['SIGMA_X']['SIGMA_Z_2'])
-
 if True:
+    print(p)
+
+if False:
     numpy.set_printoptions(precision=2, suppress=True)
     print(numpy.multiply(p[1]['Compliance'], 1e9))

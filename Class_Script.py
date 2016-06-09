@@ -296,37 +296,39 @@ def cut_off_borders(filename, cutoff_name, merge_name, truss, number_of_cells):
 
 
 # MEASURE THE VOLUME AND SURFACE ARE OF THE TRUSS CREATED IN ABAQUS. ONLY WORKS IF THE BORDERS ARE CUT OFF
-def get_area(script, filename):
+def get_area(script, filename, cutoff):
     file = open("".join(filename), "a")
     file.write("results['Volume'] = a.getVolume()\n"
                "results['Surface_Area'] = a.getArea(a.instances['" + filename[1] +
                "-1'].faces)\n"
                "print('Results: ' + str(results['Surface_Area']))\n")
-    if script.truss.name == "cubes" or script.truss.name == "body_centered_cubes" or \
-                    script.truss.name == "octetrahedrons" or script.truss.name == "face_diagonal_cubes_alt" or script.truss.name == "void_octetrahedrons":
-        file.write("area_error=-6 * a.getArea(a.instances['" + filename[1] +
-                   "-1'].faces.findAt(((" + str(script.truss.cells[0].strut_thicknesses[0] / 32 - script.truss.cell_size / 2) +
-                   ", " + str(-script.truss.cell_size / 2) + ", " + str(script.truss.cells[0].strut_thicknesses[0] / 32 - script.truss.cell_size / 2) + "),),))\n"
-                                                                                                                                                        "print('Area Error: ' + str(area_error))\n"
-                                                                                                                                                        "results['Surface_Area']+=area_error\n")
-    elif script.truss.name == "diamonds":
-        file.write("-12 * a.getArea(a.instances['" + filename[1] +
-                   "-1'].faces.findAt(((" + str(script.truss.cells[0].strut_thicknesses[0] / 32 - script.truss.cell_size / 2) +
-                   ", " + str(-script.truss.cell_size / 2) + ", " + str(script.truss.cells[0].strut_thicknesses[0] / 32 - script.truss.cell_size / 2) + "),),))"
-                   )
-        file.write("-6 * a.getArea(a.instances['" + filename[1] +
-                   "-1'].faces.findAt(((" + str(0) +
-                   ", " + str(-script.truss.cell_size / 2) + ", " + str(0) + "),),))\n"
-                   )
-    elif script.truss.name == "truncated_cubes":
-        file.write("-6 * a.getArea(a.instances['" + filename[1] +
-                   "-1'].faces.findAt(((" + str(script.truss.cells[0].strut_thicknesses[0] / 32 - script.truss.cell_size / 2) +
-                   ", " + str(-script.truss.cell_size / 2) + ", " + str(0) + "),),))\n"
-                   )
+    if cutoff:
+        if script.truss.name == "cubes" or script.truss.name == "body_centered_cubes" or \
+                        script.truss.name == "octetrahedrons" or script.truss.name == "face_diagonal_cubes_alt" or script.truss.name == "void_octetrahedrons":
+            file.write("area_error=-6 * a.getArea(a.instances['" + filename[1] +
+                       "-1'].faces.findAt(((" + str(script.truss.cells[0].strut_thicknesses[0] / 32 - script.truss.cell_size / 2) +
+                       ", " + str(-script.truss.cell_size / 2) + ", " + str(script.truss.cells[0].strut_thicknesses[0] / 32 - script.truss.cell_size / 2) + "),),))\n"
+                                                                                                                                                            "print('Area Error: ' + str(area_error))\n"
+                                                                                                                                                            "results['Surface_Area']+=area_error\n")
+        elif script.truss.name == "diamonds":
+            file.write("-12 * a.getArea(a.instances['" + filename[1] +
+                       "-1'].faces.findAt(((" + str(script.truss.cells[0].strut_thicknesses[0] / 32 - script.truss.cell_size / 2) +
+                       ", " + str(-script.truss.cell_size / 2) + ", " + str(script.truss.cells[0].strut_thicknesses[0] / 32 - script.truss.cell_size / 2) + "),),))"
+                       )
+            file.write("-6 * a.getArea(a.instances['" + filename[1] +
+                       "-1'].faces.findAt(((" + str(0) +
+                       ", " + str(-script.truss.cell_size / 2) + ", " + str(0) + "),),))\n"
+                       )
+        elif script.truss.name == "truncated_cubes":
+            file.write("-6 * a.getArea(a.instances['" + filename[1] +
+                       "-1'].faces.findAt(((" + str(script.truss.cells[0].strut_thicknesses[0] / 32 - script.truss.cell_size / 2) +
+                       ", " + str(-script.truss.cell_size / 2) + ", " + str(0) + "),),))\n"
+                       )
+        else:
+            print("The Calculated Surface Area is too high for it does not substract the outside area of the " +
+                  str(script.truss.name) + " truss")
     else:
-        print("The Calculated Surface Area is too high for it does not substract the outside area of the " +
-              str(script.truss.name) + " truss")
-
+        print("No surface area correction because there is no cutoff")
 
 ########################################################################################################################
 # FUNCTIONS FOR THE FINITE ELEMENT ANALYSIS AND WIREFRAME GENERATION
@@ -517,25 +519,8 @@ def submit(filename, job_name):
 ########################################################################################################################
 # FUNCTIONS FOR THE OUTPUT EVALUATION OF THE SIMULATION
 
-
-# READ THE DISPLACEMENT OF CERTAIN STEP AND RETURNS THEM
+# READ THE DISPLACEMENTS OF ALL SIDES OF A CERTAIN STEP AND RETURNS THEM
 def read_odb_step(filename, step_name, job_name):
-    file = open("".join(filename), "a")
-    file.write("myOdb = odbAccess.openOdb(path='" + str(job_name) + ".odb')\n")
-    # for step_name in step_name:
-    file.write("Step = myOdb.steps['" + str(step_name) + "']\n"
-                                                         "displacement = Step.frames[1].fieldOutputs['U']\n"
-                                                         "node_region=myOdb.rootAssembly.nodeSets['" + str(step_name) + "_1']\n"
-                                                                                                                        "values=displacement.getSubset(region=node_region).values\n"
-                                                                                                                        "displacements = list()\n"
-                                                                                                                        "for value in values:\n"
-                                                                                                                        "    displacements.append(value.data)\n"
-                                                                                                                        "results['" + step_name + "'] = displacements\n")
-    file.close()
-
-
-# VERSION 2 READ THE DISPLACEMENTS OF ALL SIDES OF A CERTAIN STEP AND RETURNS THEM
-def read_odb_step2(filename, step_name, job_name):
     file = open("".join(filename), "a")
     file.write("myOdb = odbAccess.openOdb(path='" + str(job_name) + ".odb')\n")
     # for step_name in step_name:
@@ -618,7 +603,6 @@ class Script:
     def generate_solid(self, strut_name, cutoff, number_of_cells):
         for cell_types in self.truss.cells:
             generate_cell(self.filename, cell_types, strut_name)
-
         cell_counter = 0
         for nodes in self.truss.nodes:
             add_cell_to_assembly(self.filename, nodes[3].name, self.filename[1], cell_counter, nodes)
@@ -630,7 +614,7 @@ class Script:
             merge(self.filename, self.filename[1], self.filename[1], cell_counter)
         delete_instances(self.filename, self.truss.cells)
         del cell_counter
-        get_area(self, self.filename)
+        get_area(self, self.filename, cutoff)
 
     def export_stl(self):
         file = open("".join(self.filename), "a")
@@ -910,15 +894,15 @@ class Script:
         if submit_job:
             submit(self.filename, job_name=self.filename[1])
         if read_output:
-            read_odb_step2(self.filename, 'SIGMA_Z', job_name=self.filename[1])
-            read_odb_step2(self.filename, 'SIGMA_Y', job_name=self.filename[1])
-            read_odb_step2(self.filename, 'SIGMA_X', job_name=self.filename[1])
-            read_odb_step2(self.filename, 'TAU_YZ', job_name=self.filename[1])
-            read_odb_step2(self.filename, 'TAU_XZ', job_name=self.filename[1])
-            read_odb_step2(self.filename, 'TAU_XY', job_name=self.filename[1])
-            # read_odb_step2(self.filename, 'TORSION_Z', job_name=self.filename[1])
-            # read_odb_step2(self.filename, 'TORSION_Y', job_name=self.filename[1])
-            # read_odb_step2(self.filename, 'TORSION_X', job_name=self.filename[1])
+            read_odb_step(self.filename, 'SIGMA_Z', job_name=self.filename[1])
+            read_odb_step(self.filename, 'SIGMA_Y', job_name=self.filename[1])
+            read_odb_step(self.filename, 'SIGMA_X', job_name=self.filename[1])
+            read_odb_step(self.filename, 'TAU_YZ', job_name=self.filename[1])
+            read_odb_step(self.filename, 'TAU_XZ', job_name=self.filename[1])
+            read_odb_step(self.filename, 'TAU_XY', job_name=self.filename[1])
+            # read_odb_step(self.filename, 'TORSION_Z', job_name=self.filename[1])
+            # read_odb_step(self.filename, 'TORSION_Y', job_name=self.filename[1])
+            # read_odb_step(self.filename, 'TORSION_X', job_name=self.filename[1])
 
             # EXTRACTS THE RESULTS AS A DIRECTORY(PYTHON STRUCTURE) IN A BINARY PICKLE FILE
 

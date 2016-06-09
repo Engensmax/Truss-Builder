@@ -8,7 +8,7 @@ class Truss:
     def __init__(self, name, nodes, cells, cell_size, number_of_cells):
         self.name = name                    # Name of the cells. F.e. "cubetruss"
         self.nodes = nodes                  # Syntax: [["node1x", "node1y", "node1z", "self.cells[0]"], ...]
-        self.cells = cells                  # Syntax: [["Cell1", "cell_size1"], ["Cell2", "cell_size2"], ...]
+        self.cells = cells                  # Syntax: ["Cell1","Cell2",...]
         self.cell_size = cell_size          # Unit length of the smallest unit cell
         self.number_of_cells = number_of_cells
 
