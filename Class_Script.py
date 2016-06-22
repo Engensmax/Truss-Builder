@@ -32,35 +32,35 @@ def generate_strut(filename, strut_name, affix, connection):
     # SQUARE
     if strut_name == "square":
         file.write(
-            "s.Line(point1=(" + str(-thickness / 2) + ", " + str(-thickness / 2) + "), point2=(" + str(thickness / 2) + ", " +
-            str(-thickness / 2) + "))\n"
-                                  "s.Line(point1=(" + str(thickness / 2) + ", " + str(-thickness / 2) + "), point2=(" + str(thickness / 2) + ", " +
-            str(thickness / 2) + "))\n"
-                                 "s.Line(point1=(" + str(thickness / 2) + ", " + str(thickness / 2) + "), point2=(" + str(-thickness / 2) + ", " +
-            str(thickness / 2) + "))\n"
-                                 "s.Line(point1=(" + str(-thickness / 2) + ", " + str(thickness / 2) + "), point2=(" + str(-thickness / 2) + ", " +
-            str(-thickness / 2) + "))\n")
+            "s.Line(point1=(" + str(-thickness / 2) + ", " + str(-thickness / 2) + "), point2=(" + str(thickness / 2) +
+            ", " + str(-thickness / 2) + "))\n"
+            "s.Line(point1=(" + str(thickness / 2) + ", " + str(-thickness / 2) + "), point2=(" + str(thickness / 2) +
+            ", " + str(thickness / 2) + "))\n"
+            "s.Line(point1=(" + str(thickness / 2) + ", " + str(thickness / 2) + "), point2=(" + str(-thickness / 2) +
+            ", " + str(thickness / 2) + "))\n"
+            "s.Line(point1=(" + str(-thickness / 2) + ", " + str(thickness / 2) + "), point2=(" + str(-thickness / 2) +
+            ", " + str(-thickness / 2) + "))\n")
 
     # OCTAGON
     elif strut_name == "octagon":
         b = math.sqrt(2) / 2 * (1 - (math.sqrt(2) / (1 + math.sqrt(2)))) * thickness
         file.write(
-            "s.Line(point1=(" + str(-thickness / 2 + b) + ", " + str(-thickness / 2) + "), point2=(" + str(thickness / 2 - b) +
-            ", " + str(-thickness / 2) + "))\n"
-                                         "s.Line(point1=(" + str(thickness / 2 - b) + ", " + str(-thickness / 2) + "), point2=(" + str(thickness / 2) +
-            ", " + str(-thickness / 2 + b) + "))\n"
-                                             "s.Line(point1=(" + str(thickness / 2) + ", " + str(-thickness / 2 + b) + "), point2=(" + str(thickness / 2) +
-            ", " + str(thickness / 2 - b) + "))\n"
-                                            "s.Line(point1=(" + str(thickness / 2) + ", " + str(thickness / 2 - b) + "), point2=(" + str(thickness / 2 - b) +
-            ", " + str(thickness / 2) + "))\n"
-                                        "s.Line(point1=(" + str(thickness / 2 - b) + ", " + str(thickness / 2) + "), point2=(" + str(-thickness / 2 + b) +
-            ", " + str(thickness / 2) + "))\n"
-                                        "s.Line(point1=(" + str(-thickness / 2 + b) + ", " + str(thickness / 2) + "), point2=(" + str(-thickness / 2) +
-            ", " + str(thickness / 2 - b) + "))\n"
-                                            "s.Line(point1=(" + str(-thickness / 2) + ", " + str(thickness / 2 - b) + "), point2=(" + str(-thickness / 2) +
-            ", " + str(-thickness / 2 + b) + "))\n"
-                                             "s.Line(point1=(" + str(-thickness / 2) + ", " + str(-thickness / 2 + b) + "), point2=(" + str(-thickness / 2 + b) +
-            ", " + str(-thickness / 2) + "))\n")
+            "s.Line(point1=(" + str(-thickness / 2 + b) + ", " + str(-thickness / 2) + "), point2=(" +
+            str(thickness / 2 - b) + ", " + str(-thickness / 2) + "))\n"
+            "s.Line(point1=(" + str(thickness / 2 - b) + ", " + str(-thickness / 2) + "), point2=(" +
+            str(thickness / 2) + ", " + str(-thickness / 2 + b) + "))\n"
+            "s.Line(point1=(" + str(thickness / 2) + ", " + str(-thickness / 2 + b) + "), point2=(" +
+            str(thickness / 2) + ", " + str(thickness / 2 - b) + "))\n"
+            "s.Line(point1=(" + str(thickness / 2) + ", " + str(thickness / 2 - b) + "), point2=(" +
+            str(thickness / 2 - b) + ", " + str(thickness / 2) + "))\n"
+            "s.Line(point1=(" + str(thickness / 2 - b) + ", " + str(thickness / 2) + "), point2=(" +
+            str(-thickness / 2 + b) + ", " + str(thickness / 2) + "))\n"
+            "s.Line(point1=(" + str(-thickness / 2 + b) + ", " + str(thickness / 2) + "), point2=(" +
+            str(-thickness / 2) + ", " + str(thickness / 2 - b) + "))\n"
+            "s.Line(point1=(" + str(-thickness / 2) + ", " + str(thickness / 2 - b) + "), point2=(" +
+            str(-thickness / 2) + ", " + str(-thickness / 2 + b) + "))\n"
+            "s.Line(point1=(" + str(-thickness / 2) + ", " + str(-thickness / 2 + b) + "), point2=(" +
+            str(-thickness / 2 + b) + ", " + str(-thickness / 2) + "))\n")
 
     # DODECAGON
     elif strut_name == "dodecagon":
@@ -91,8 +91,8 @@ def generate_strut(filename, strut_name, affix, connection):
         "p = mdb.models['Model-1'].Part(name='strut_" + str(strut_name) + str(affix) +
         "', dimensionality=THREE_D, type=DEFORMABLE_BODY)\n"
         "p = mdb.models['Model-1'].parts['strut_" + str(strut_name) + str(affix) + "']\n"
-                                                                                   "p.BaseSolidExtrude(sketch=s, depth=" + str(length) + ")\n"
-                                                                                                                                         "s.unsetPrimaryObject()\n")
+        "p.BaseSolidExtrude(sketch=s, depth=" + str(length) + ")\n"
+        "s.unsetPrimaryObject()\n")
 
     file.close()
 
@@ -116,17 +116,15 @@ def add_strut_to_cell(filename, strut_name, instance_name, strut_counter, connec
 
         "p = mdb.models['Model-1'].parts['strut_" + str(strut_name) + str(strut_counter) + "']\n"
 
-                                                                                           "a.Instance(name='instance_" + str(instance_name) + "-" + str(
-            strut_counter) + "', part=p, dependent=ON)\n"
+        "a.Instance(name='instance_" + str(instance_name) + "-" + str(strut_counter) + "', part=p, dependent=ON)\n"
 
-                             "a = mdb.models['Model-1'].rootAssembly\n"
+        "a = mdb.models['Model-1'].rootAssembly\n"
 
-                             "a.rotate(instanceList=('instance_" + str(instance_name) + "-" + str(strut_counter) +
+        "a.rotate(instanceList=('instance_" + str(instance_name) + "-" + str(strut_counter) +
         "', ), axisPoint=(0.0, 0.0, 0.0), axisDirection=(" + str(normal[0]) + ", " +
         str(normal[1]) + ", " + str(normal[2]) + "), angle=" + str(angle) + ")\n"
 
-                                                                            "a.translate(instanceList=('instance_" + str(instance_name) + "-" + str(
-            strut_counter) + "', ), vector=(" +
+        "a.translate(instanceList=('instance_" + str(instance_name) + "-" + str(strut_counter) + "', ), vector=(" +
         str(begin_vector[0]) + ", " +
         str(begin_vector[1]) + ", " +
         str(begin_vector[2]) + "))\n"
@@ -147,12 +145,11 @@ def add_cell_to_assembly(filename, cell_name, instance_name, cell_counter, truss
 
         "p = mdb.models['Model-1'].parts['" + str(cell_name) + "']\n"
 
-                                                               "a.Instance(name='instance_" + str(instance_name) + "-" + str(cell_counter) + "', part=p, dependent=ON)\n"
+        "a.Instance(name='instance_" + str(instance_name) + "-" + str(cell_counter) + "', part=p, dependent=ON)\n"
 
-                                                                                                                                             "a = mdb.models['Model-1'].rootAssembly\n"
+        "a = mdb.models['Model-1'].rootAssembly\n"
 
-                                                                                                                                             "a.translate(instanceList=('instance_" + str(
-            instance_name) + "-" + str(cell_counter) + "', ), vector=(" +
+        "a.translate(instanceList=('instance_" + str(instance_name) + "-" + str(cell_counter) + "', ), vector=(" +
         str(truss_node_coordinates[0]) + ", " +
         str(truss_node_coordinates[1]) + ", " +
         str(truss_node_coordinates[2]) + "))\n")
@@ -170,7 +167,8 @@ def merge(filename, merge_name, instance_name, part_counter):
         for counter in range(0, part_counter):
             file.write("del a.features['instance_" + str(instance_name) + "-" + str(counter) + "']\n")
     else:
-        file.write("mdb.models['Model-1'].rootAssembly.features.changeKey(fromName='instance_" + str(instance_name) + "-0', toName='" + str(merge_name) + "-1')\n")
+        file.write("mdb.models['Model-1'].rootAssembly.features.changeKey(fromName='instance_" + str(instance_name) +
+                   "-0', toName='" + str(merge_name) + "-1')\n")
     file.close()
 
 
@@ -212,15 +210,15 @@ def cut_off_borders(filename, cutoff_name, merge_name, truss, number_of_cells):
                str(-(number_of_cells + 4) * truss.cell_size / 2) + "), point2=(" +
                str((number_of_cells + 4) * truss.cell_size / 2) + ", " +
                str(-(number_of_cells + 4) * truss.cell_size / 2) + "))\n"
-                                                                   "s.Line(point1=(" + str((number_of_cells + 4) * truss.cell_size / 2) + ", " +
+               "s.Line(point1=(" + str((number_of_cells + 4) * truss.cell_size / 2) + ", " +
                str(-(number_of_cells + 4) * truss.cell_size / 2) + "), point2=(" +
                str((number_of_cells + 4) * truss.cell_size / 2) + ", " +
                str((number_of_cells + 4) * truss.cell_size / 2) + "))\n"
-                                                                  "s.Line(point1=(" + str((number_of_cells + 4) * truss.cell_size / 2) + ", " +
+               "s.Line(point1=(" + str((number_of_cells + 4) * truss.cell_size / 2) + ", " +
                str((number_of_cells + 4) * truss.cell_size / 2) + "), point2=(" +
                str(-(number_of_cells + 4) * truss.cell_size / 2) + ", " +
                str((number_of_cells + 4) * truss.cell_size / 2) + "))\n"
-                                                                  "s.Line(point1=(" + str(-(number_of_cells + 4) * truss.cell_size / 2) + ", " +
+               "s.Line(point1=(" + str(-(number_of_cells + 4) * truss.cell_size / 2) + ", " +
                str((number_of_cells + 4) * truss.cell_size / 2) + "), point2=(" +
                str(-(number_of_cells + 4) * truss.cell_size / 2) + ", " +
                str(-(number_of_cells + 4) * truss.cell_size / 2) + "))\n")
@@ -248,50 +246,50 @@ def cut_off_borders(filename, cutoff_name, merge_name, truss, number_of_cells):
         str(0) + ", " +
         str(0) + ", " +
         str((number_of_cells - 0.5) * truss.cell_size) + "))\n"
-                                                         "a.translate(instanceList=('instance_cut_off1', ), vector=(" + str(truss.cell_size) + "," +
+        "a.translate(instanceList=('instance_cut_off1', ), vector=(" + str(truss.cell_size) + "," +
         str(truss.cell_size) + ",0))\n"
-                               "a.rotate(instanceList=('instance_cut_off2', ), axisPoint=(0.0, 0.0, 0.0), axisDirection=(0,1,0), angle=180)\n"
-                               "a.translate(instanceList=('instance_cut_off2', ), vector=(" +
+        "a.rotate(instanceList=('instance_cut_off2', ), axisPoint=(0.0, 0.0, 0.0), axisDirection=(0,1,0), angle=180)\n"
+        "a.translate(instanceList=('instance_cut_off2', ), vector=(" +
         str(0) + ", " +
         str(0) + ", " +
         str(-0.5 * truss.cell_size) + "))\n"
-                                      "a.translate(instanceList=('instance_cut_off2', ), vector=(" + str(truss.cell_size) + "," +
-        str(truss.cell_size) + ",0))\n"
-                               "a.rotate(instanceList=('instance_cut_off3', ), axisPoint=(0.0, 0.0, 0.0), axisDirection=(0,1,0), angle=-90)\n"
-                               "a.translate(instanceList=('instance_cut_off3', ), vector=(" +
+                                      "a.translate(instanceList=('instance_cut_off2', ), vector=(" +
+        str(truss.cell_size) + "," + str(truss.cell_size) + ",0))\n"
+        "a.rotate(instanceList=('instance_cut_off3', ), axisPoint=(0.0, 0.0, 0.0), axisDirection=(0,1,0), angle=-90)\n"
+        "a.translate(instanceList=('instance_cut_off3', ), vector=(" +
         str(-0.5 * truss.cell_size) + ", " +
         str(0) + ", " +
         str(0) + "))\n"
                  "a.translate(instanceList=('instance_cut_off3', ), vector=(0, " + str(truss.cell_size) + "," +
         str(truss.cell_size) + "))\n"
-                               "a.rotate(instanceList=('instance_cut_off4', ), axisPoint=(0.0, 0.0, 0.0), axisDirection=(0,1,0), angle=90)\n"
-                               "a.translate(instanceList=('instance_cut_off4', ), vector=(" +
+        "a.rotate(instanceList=('instance_cut_off4', ), axisPoint=(0.0, 0.0, 0.0), axisDirection=(0,1,0), angle=90)\n"
+        "a.translate(instanceList=('instance_cut_off4', ), vector=(" +
         str((number_of_cells - 0.5) * truss.cell_size) + ", " +
         str(0) + ", " +
         str(0) + "))\n"
                  "a.translate(instanceList=('instance_cut_off4', ), vector=(0, " + str(truss.cell_size) + "," +
         str(truss.cell_size) + "))\n"
-                               "a.rotate(instanceList=('instance_cut_off5', ), axisPoint=(0.0, 0.0, 0.0), axisDirection=(1,0,0), angle=90)\n"
-                               "a.translate(instanceList=('instance_cut_off5', ), vector=(" +
+        "a.rotate(instanceList=('instance_cut_off5', ), axisPoint=(0.0, 0.0, 0.0), axisDirection=(1,0,0), angle=90)\n"
+        "a.translate(instanceList=('instance_cut_off5', ), vector=(" +
         str(0) + ", " +
         str(-0.5 * truss.cell_size) + ", " +
         str(0) + "))\n"
-                 "a.translate(instanceList=('instance_cut_off5', ), vector=(" + str(truss.cell_size) + ", 0, " +
+        "a.translate(instanceList=('instance_cut_off5', ), vector=(" + str(truss.cell_size) + ", 0, " +
         str(truss.cell_size) + "))\n"
-                               "a.rotate(instanceList=('instance_cut_off6', ), axisPoint=(0.0, 0.0, 0.0), axisDirection=(1,0,0), angle=-90)\n"
-                               "a.translate(instanceList=('instance_cut_off6', ), vector=(" +
+        "a.rotate(instanceList=('instance_cut_off6', ), axisPoint=(0.0, 0.0, 0.0), axisDirection=(1,0,0), angle=-90)\n"
+        "a.translate(instanceList=('instance_cut_off6', ), vector=(" +
         str(0) + ", " +
         str((number_of_cells - 0.5) * truss.cell_size) + ", " +
         str(0) + "))\n"
-                 "a.translate(instanceList=('instance_cut_off6', ), vector=(" + str(truss.cell_size) + ", 0, " +
+        "a.translate(instanceList=('instance_cut_off6', ), vector=(" + str(truss.cell_size) + ", 0, " +
         str(truss.cell_size) + "))\n"
     )
 
     file.write("a.InstanceFromBooleanCut(name='" + cutoff_name + "', "
-                                                                 "instanceToBeCut=mdb.models['Model-1'].rootAssembly.instances['" + merge_name + "'], "
-                                                                                                                                                 "cuttingInstances=(a.instances['instance_cut_off1'], a.instances['instance_cut_off2'], "
-                                                                                                                                                 "a.instances['instance_cut_off3'], a.instances['instance_cut_off4'], a.instances['instance_cut_off5'], "
-                                                                                                                                                 "a.instances['instance_cut_off6'], ), originalInstances=DELETE)\n")
+               "instanceToBeCut=mdb.models['Model-1'].rootAssembly.instances['" + merge_name + "'], "
+               "cuttingInstances=(a.instances['instance_cut_off1'], a.instances['instance_cut_off2'], "
+               "a.instances['instance_cut_off3'], a.instances['instance_cut_off4'], a.instances['instance_cut_off5'], "
+               "a.instances['instance_cut_off6'], ), originalInstances=DELETE)\n")
     file.close()
 
 
@@ -304,16 +302,21 @@ def get_area(script, filename, cutoff):
                "print('Results: ' + str(results['Surface_Area']))\n")
     if cutoff:
         if script.truss.name == "cubes" or script.truss.name == "body_centered_cubes" or \
-                        script.truss.name == "octetrahedrons" or script.truss.name == "face_diagonal_cubes_alt" or script.truss.name == "void_octetrahedrons":
+                        script.truss.name == "octetrahedrons" or script.truss.name == "face_diagonal_cubes_alt" or \
+                        script.truss.name == "void_octetrahedrons":
             file.write("area_error=-6 * a.getArea(a.instances['" + filename[1] +
-                       "-1'].faces.findAt(((" + str(script.truss.cells[0].strut_thicknesses[0] / 32 - script.truss.cell_size / 2) +
-                       ", " + str(-script.truss.cell_size / 2) + ", " + str(script.truss.cells[0].strut_thicknesses[0] / 32 - script.truss.cell_size / 2) + "),),))\n"
-                                                                                                                                                            "print('Area Error: ' + str(area_error))\n"
-                                                                                                                                                            "results['Surface_Area']+=area_error\n")
+                       "-1'].faces.findAt(((" + str(script.truss.cells[0].strut_thicknesses[0] / 32 -
+                                                    script.truss.cell_size / 2) +
+                       ", " + str(-script.truss.cell_size / 2) + ", " +
+                       str(script.truss.cells[0].strut_thicknesses[0] / 32 - script.truss.cell_size / 2) + "),),))\n"
+                       "print('Area Error: ' + str(area_error))\n"
+                       "results['Surface_Area']+=area_error\n")
         elif script.truss.name == "diamonds":
             file.write("-12 * a.getArea(a.instances['" + filename[1] +
-                       "-1'].faces.findAt(((" + str(script.truss.cells[0].strut_thicknesses[0] / 32 - script.truss.cell_size / 2) +
-                       ", " + str(-script.truss.cell_size / 2) + ", " + str(script.truss.cells[0].strut_thicknesses[0] / 32 - script.truss.cell_size / 2) + "),),))"
+                       "-1'].faces.findAt(((" +
+                       str(script.truss.cells[0].strut_thicknesses[0] / 32 - script.truss.cell_size / 2) +
+                       ", " + str(-script.truss.cell_size / 2) + ", " +
+                       str(script.truss.cells[0].strut_thicknesses[0] / 32 - script.truss.cell_size / 2) + "),),))"
                        )
             file.write("-6 * a.getArea(a.instances['" + filename[1] +
                        "-1'].faces.findAt(((" + str(0) +
@@ -321,7 +324,8 @@ def get_area(script, filename, cutoff):
                        )
         elif script.truss.name == "truncated_cubes":
             file.write("-6 * a.getArea(a.instances['" + filename[1] +
-                       "-1'].faces.findAt(((" + str(script.truss.cells[0].strut_thicknesses[0] / 32 - script.truss.cell_size / 2) +
+                       "-1'].faces.findAt(((" +
+                       str(script.truss.cells[0].strut_thicknesses[0] / 32 - script.truss.cell_size / 2) +
                        ", " + str(-script.truss.cell_size / 2) + ", " + str(0) + "),),))\n"
                        )
         else:
@@ -388,11 +392,11 @@ def assign_material_to_wire(filename, truss, material_name):
         for connection in cell.connections:
             file.write("mdb.models['Model-1'].CircularProfile(name='Profile-" + str(cell.name) + "-" + str(counter) +
                        "', r=" + str(connection[2] / 2) + ")\n"
-                                                          "mdb.models['Model-1'].BeamSection(name='Section-" + str(cell.name) + "-" + str(counter) +
+                       "mdb.models['Model-1'].BeamSection(name='Section-" + str(cell.name) + "-" + str(counter) +
                        "',integration=DURING_ANALYSIS, poissonRatio=0.0, profile='Profile-" + str(cell.name) + "-" +
                        str(counter) + "',material='" + str(material_name) + "', temperatureVar=LINEAR, "
-                                                                            "consistentMassMatrix=False)\n"
-                                                                            "r = regionToolset.Region(edges=p.edges.findAt(")
+                       "consistentMassMatrix=False)\n"
+                       "r = regionToolset.Region(edges=p.edges.findAt(")
             for connection_node in list_of_nodes:
                 file.write("((" + str(1 / 2 * (connection[0][0] + connection[1][0]) + connection_node[0]) + ", " +
                            str(1 / 2 * (connection[0][1] + connection[1][1]) + connection_node[1]) + ", " +
@@ -417,8 +421,9 @@ def mesh_part(filename, truss, mesh_size):
                "p = mdb.models['Model-1'].parts['Part-1']\n"
                "a.Instance(name='Part-1-1', part=p, dependent=ON)\n"
                "p.seedPart(size=" + str(mesh_size) + ", deviationFactor=0.1, minSizeFactor=0.1)\n"
-                                                     "p.generateMesh()\n"
-                                                     "p.setElementType(regions=regionToolset.Region(p.edges), elemTypes=(mesh.ElemType(elemCode=B32,elemLibrary=STANDARD),))\n")
+               "p.generateMesh()\n"
+               "p.setElementType(regions=regionToolset.Region(p.edges), "
+               "elemTypes=(mesh.ElemType(elemCode=B32,elemLibrary=STANDARD),))\n")
     file.close()
 
 
@@ -437,12 +442,13 @@ def define_loadings(filename, step_name, affix, vertices, load_type, load_type_l
         file.write("((" + str(vertex_coordinates[0]) +
                    ", " + str(vertex_coordinates[1]) +
                    ", " + str(vertex_coordinates[2]) + "), ), ")
-    file.write(")\n"
-               "mdb.models['Model-1']." + str(load_type) + "(name='" + str(step_name + affix) + "_load', createStepName='" +
-               str(step_name) + "',region=a.Set(vertices=loading_points, name='" + str(step_name) + "_1" + str(affix) +
-               "'), c" + str(load_type_letter) + "1=" + str(force[0]) + ", c" + str(load_type_letter) + "2=" + str(force[1]) +
-               ", c" + str(load_type_letter) + "3=" + str(force[2]) +
-               ", distributionType=UNIFORM, field='', localCsys=None)\n")
+    file.write(
+        ")\n"
+        "mdb.models['Model-1']." + str(load_type) + "(name='" + str(step_name + affix) + "_load', createStepName='" +
+        str(step_name) + "',region=a.Set(vertices=loading_points, name='" + str(step_name) + "_1" + str(affix) +
+        "'), c" + str(load_type_letter) + "1=" + str(force[0]) + ", c" + str(load_type_letter) + "2=" + str(force[1]) +
+        ", c" + str(load_type_letter) + "3=" + str(force[2]) +
+        ", distributionType=UNIFORM, field='', localCsys=None)\n")
     file.close()
     # ConcentratedForce     f
     # Moment                m
@@ -504,14 +510,12 @@ def request_field_output(filename, step_name, output_name):
 def submit(filename, job_name):
     file = open("".join(filename), "a")
     file.write("mdb.Job(name='" + str(job_name) + "', model='Model-1', description='', type=ANALYSIS, "
-                                                  "atTime=None, waitMinutes=0, waitHours=0, queue=None, memory=90, "
-                                                  "memoryUnits=PERCENTAGE, getMemoryFromAnalysis=True, "
-                                                  "explicitPrecision=SINGLE, nodalOutputPrecision=SINGLE, echoPrint=OFF, "
-                                                  "modelPrint=OFF, contactPrint=OFF, historyPrint=OFF, userSubroutine='', scratch='', resultsFormat=ODB)\n"
-                                                  "mdb.jobs['" + str(job_name) + "'].submit(consistencyChecking=OFF)\n"
-               # THE FOLLOWING LINE CAUSES FAILURE WHEN RUNNING THE SCRIPT WITH GUI. IF YOU WANT TO HAVE THE GUI
-               # COMMENT THE LINE
-                                                                                 "mdb.jobs['" + str(job_name) + "'].waitForCompletion()\n"
+               "atTime=None, waitMinutes=0, waitHours=0, queue=None, memory=90, "
+               "memoryUnits=PERCENTAGE, getMemoryFromAnalysis=True, "
+               "explicitPrecision=SINGLE, nodalOutputPrecision=SINGLE, echoPrint=OFF, "
+               "modelPrint=OFF, contactPrint=OFF, historyPrint=OFF, userSubroutine='', scratch='', resultsFormat=ODB)\n"
+               "mdb.jobs['" + str(job_name) + "'].submit(consistencyChecking=OFF)\n"
+               "mdb.jobs['" + str(job_name) + "'].waitForCompletion()\n"
                )
     file.close()
 
@@ -525,17 +529,17 @@ def read_odb_step(filename, step_name, job_name):
     file.write("myOdb = odbAccess.openOdb(path='" + str(job_name) + ".odb')\n")
     # for step_name in step_name:
     file.write("Step = myOdb.steps['" + str(step_name) + "']\n"
-                                                         "displacement = Step.frames[1].fieldOutputs['U']\n"
-                                                         "list_of_sides = ['SIGMA_X_1', 'SIGMA_X_2_X', 'SIGMA_Y_1', 'SIGMA_Y_2_Y', 'SIGMA_Z_1', 'SIGMA_Z_2_Z']\n"
-                                                         "node_region=dict()\n"
-                                                         "displacements = dict()\n"
-                                                         "for sides in list_of_sides:\n"
-                                                         "    node_region[sides]=myOdb.rootAssembly.nodeSets[sides]\n"
-                                                         "    values = displacement.getSubset(region=node_region[sides]).values\n"
-                                                         "    displacements[sides]=list()\n"
-                                                         "    for value in values:\n"
-                                                         "        displacements[sides].append(value.data)\n"
-                                                         "results['" + step_name + "'] = displacements\n")
+               "displacement = Step.frames[1].fieldOutputs['U']\n"
+               "list_of_sides = ['SIGMA_X_1', 'SIGMA_X_2_X', 'SIGMA_Y_1', 'SIGMA_Y_2_Y', 'SIGMA_Z_1', 'SIGMA_Z_2_Z']\n"
+               "node_region=dict()\n"
+               "displacements = dict()\n"
+               "for sides in list_of_sides:\n"
+               "    node_region[sides]=myOdb.rootAssembly.nodeSets[sides]\n"
+               "    values = displacement.getSubset(region=node_region[sides]).values\n"
+               "    displacements[sides]=list()\n"
+               "    for value in values:\n"
+               "        displacements[sides].append(value.data)\n"
+               "results['" + step_name + "'] = displacements\n")
     file.close()
 
 
@@ -588,9 +592,8 @@ class Script:
             "from odbMaterial import *\n"
             "from odbSection import *\n"
             "import pickle\n"
-            # "sys.path.insert(9, r'c:/SIMULIA/Abaqus/6.14-2SE/code/python2.7/lib/abaqus_plugins/stlExport')\n"
-            # "sys.path.insert(9, r'c:/SIMULIA/Abaqus/6.14-1/code/python2.7/lib/abaqus_plugins/stlExport')\n"
-            "sys.path.insert(9, r'c:/SIMULIA/Abaqus/" + str(abaqus_version) + "/code/python2.7/lib/abaqus_plugins/stlExport')\n"
+            "sys.path.insert(9, r'c:/SIMULIA/Abaqus/" + str(abaqus_version) +
+            "/code/python2.7/lib/abaqus_plugins/stlExport')\n"
             "import stlExport_kernel\n"
             "Mdb()\n"
             "session.viewports['Viewport: 1'].viewportAnnotationOptions.setValues(compassPrivilegedPlane=XYPLANE)\n"
@@ -631,7 +634,8 @@ class Script:
     def evaluate(self, create_steps, submit_job, read_output, number_of_cells):
         applied_force = 1
         generate_wireframe(self.filename, truss=self.truss)
-        define_material(self.filename, material_name=self.material['name'], young_modulus=self.material['E_Modulus'], poisson_ratio=self.material['poisson_ratio'])
+        define_material(self.filename, material_name=self.material['name'], young_modulus=self.material['E_Modulus'],
+                        poisson_ratio=self.material['poisson_ratio'])
         assign_material_to_wire(self.filename, self.truss, material_name=self.material['name'])  # "MED610"2.5e9, 0.33
         mesh_part(self.filename, self.truss, mesh_size=self.truss.cell_size / 3)
         list_of_steps = list()
@@ -646,20 +650,25 @@ class Script:
             # SIGMA_Z
             step_name = "SIGMA_Z"
             create_static_step(self.filename, step_name=step_name)
-            vertices = self.truss.find_points_in_plane(axis="z", axis_value=(number_of_cells - 0.5) * self.truss.cell_size,
+            vertices = self.truss.find_points_in_plane(axis="z",
+                                                       axis_value=(number_of_cells - 0.5) * self.truss.cell_size,
                                                        accuracy=accuracy)
             define_loadings(self.filename, step_name=step_name, affix="", vertices=vertices,
-                            load_type="ConcentratedForce", load_type_letter="f", force=[0, 0, -applied_force / len(vertices)])
+                            load_type="ConcentratedForce", load_type_letter="f",
+                            force=[0, 0, -applied_force / len(vertices)])
             define_boundary_conditions(self.filename, step_name=step_name, affix='_Z',
-                                       vertices=self.truss.find_points_in_plane(axis="z", axis_value=-0.5 * self.truss.cell_size,
+                                       vertices=self.truss.find_points_in_plane(axis="z",
+                                                                                axis_value=-0.5 * self.truss.cell_size,
                                                                                 accuracy=accuracy),
                                        direction='u3=0')
             define_boundary_conditions(self.filename, step_name=step_name, affix='_X',
-                                       vertices=self.truss.find_points_in_plane(axis="x", axis_value=-0.5 * self.truss.cell_size,
+                                       vertices=self.truss.find_points_in_plane(axis="x",
+                                                                                axis_value=-0.5 * self.truss.cell_size,
                                                                                 accuracy=accuracy),
                                        direction='u1=0')
             define_boundary_conditions(self.filename, step_name=step_name, affix='_Y',
-                                       vertices=self.truss.find_points_in_plane(axis="y", axis_value=-0.5 * self.truss.cell_size,
+                                       vertices=self.truss.find_points_in_plane(axis="y",
+                                                                                axis_value=-0.5 * self.truss.cell_size,
                                                                                 accuracy=accuracy),
                                        direction='u2=0')
             for step in list_of_steps:
@@ -674,20 +683,25 @@ class Script:
 
             step_name = "SIGMA_Y"
             create_static_step(self.filename, step_name=step_name)
-            vertices = self.truss.find_points_in_plane(axis="y", axis_value=(number_of_cells - 0.5) * self.truss.cell_size,
+            vertices = self.truss.find_points_in_plane(axis="y",
+                                                       axis_value=(number_of_cells - 0.5) * self.truss.cell_size,
                                                        accuracy=accuracy)
             define_loadings(self.filename, step_name=step_name, affix="", vertices=vertices,
-                            load_type="ConcentratedForce", load_type_letter="f", force=[0, -applied_force / len(vertices), 0])
+                            load_type="ConcentratedForce", load_type_letter="f",
+                            force=[0, -applied_force / len(vertices), 0])
             define_boundary_conditions(self.filename, step_name=step_name, affix='_Y',
-                                       vertices=self.truss.find_points_in_plane(axis="y", axis_value=-0.5 * self.truss.cell_size,
+                                       vertices=self.truss.find_points_in_plane(axis="y",
+                                                                                axis_value=-0.5 * self.truss.cell_size,
                                                                                 accuracy=accuracy),
                                        direction='u2=0')
             define_boundary_conditions(self.filename, step_name=step_name, affix='_Z',
-                                       vertices=self.truss.find_points_in_plane(axis="z", axis_value=-0.5 * self.truss.cell_size,
+                                       vertices=self.truss.find_points_in_plane(axis="z",
+                                                                                axis_value=-0.5 * self.truss.cell_size,
                                                                                 accuracy=accuracy),
                                        direction='u3=0')
             define_boundary_conditions(self.filename, step_name=step_name, affix='_X',
-                                       vertices=self.truss.find_points_in_plane(axis="x", axis_value=-0.5 * self.truss.cell_size,
+                                       vertices=self.truss.find_points_in_plane(axis="x",
+                                                                                axis_value=-0.5 * self.truss.cell_size,
                                                                                 accuracy=accuracy),
                                        direction='u1=0')
             for step in list_of_steps:
@@ -706,17 +720,21 @@ class Script:
                                                        axis_value=(number_of_cells - 0.5) * self.truss.cell_size,
                                                        accuracy=accuracy)
             define_loadings(self.filename, step_name=step_name, affix="", vertices=vertices,
-                            load_type="ConcentratedForce", load_type_letter="f", force=[-applied_force / len(vertices), 0, 0])
+                            load_type="ConcentratedForce", load_type_letter="f",
+                            force=[-applied_force / len(vertices), 0, 0])
             define_boundary_conditions(self.filename, step_name=step_name, affix='_X',
-                                       vertices=self.truss.find_points_in_plane(axis="x", axis_value=-0.5 * self.truss.cell_size,
+                                       vertices=self.truss.find_points_in_plane(axis="x",
+                                                                                axis_value=-0.5 * self.truss.cell_size,
                                                                                 accuracy=accuracy),
                                        direction='u1=0')
             define_boundary_conditions(self.filename, step_name=step_name, affix='_Y',
-                                       vertices=self.truss.find_points_in_plane(axis="y", axis_value=-0.5 * self.truss.cell_size,
+                                       vertices=self.truss.find_points_in_plane(axis="y",
+                                                                                axis_value=-0.5 * self.truss.cell_size,
                                                                                 accuracy=accuracy),
                                        direction='u2=0')
             define_boundary_conditions(self.filename, step_name=step_name, affix='_Z',
-                                       vertices=self.truss.find_points_in_plane(axis="z", axis_value=-0.5 * self.truss.cell_size,
+                                       vertices=self.truss.find_points_in_plane(axis="z",
+                                                                                axis_value=-0.5 * self.truss.cell_size,
                                                                                 accuracy=accuracy),
                                        direction='u3=0')
             for step in list_of_steps:
@@ -732,21 +750,30 @@ class Script:
             step_name = "TAU_XZ"
             create_static_step(self.filename, step_name=step_name)
             vertices = self.truss.find_points_in_plane(axis="z",
-                                                       axis_value=(number_of_cells - 0.5) * self.truss.cell_size, accuracy=accuracy)
+                                                       axis_value=(number_of_cells - 0.5) * self.truss.cell_size,
+                                                       accuracy=accuracy)
             define_loadings(self.filename, step_name=step_name, affix="_Z", vertices=vertices,
-                            load_type="ConcentratedForce", load_type_letter="f", force=[applied_force / len(vertices), 0, 0])
+                            load_type="ConcentratedForce", load_type_letter="f",
+                            force=[applied_force / len(vertices), 0, 0])
             vertices = self.truss.find_points_in_plane(axis="x",
-                                                       axis_value=(number_of_cells - 0.5) * self.truss.cell_size, accuracy=accuracy)
+                                                       axis_value=(number_of_cells - 0.5) * self.truss.cell_size,
+                                                       accuracy=accuracy)
             define_loadings(self.filename, step_name=step_name, affix="_X", vertices=vertices,
-                            load_type="ConcentratedForce", load_type_letter="f", force=[0, 0, applied_force / len(vertices)])
+                            load_type="ConcentratedForce", load_type_letter="f",
+                            force=[0, 0, applied_force / len(vertices)])
             define_boundary_conditions(self.filename, step_name=step_name, affix='_Z',
-                                       vertices=self.truss.find_points_in_plane(axis="z", axis_value=-0.5 * self.truss.cell_size, accuracy=accuracy),
+                                       vertices=self.truss.find_points_in_plane(axis="z",
+                                                                                axis_value=-0.5 * self.truss.cell_size,
+                                                                                accuracy=accuracy),
                                        direction='u1=0')
             define_boundary_conditions(self.filename, step_name=step_name, affix='_X',
-                                       vertices=self.truss.find_points_in_plane(axis="x", axis_value=-0.5 * self.truss.cell_size, accuracy=accuracy),
+                                       vertices=self.truss.find_points_in_plane(axis="x",
+                                                                                axis_value=-0.5 * self.truss.cell_size,
+                                                                                accuracy=accuracy),
                                        direction='u3=0')
             define_boundary_conditions(self.filename, step_name=step_name, affix='_Y',
-                                       vertices=self.truss.find_points_in_plane(axis="y", axis_value=-0.5 * self.truss.cell_size,
+                                       vertices=self.truss.find_points_in_plane(axis="y",
+                                                                                axis_value=-0.5 * self.truss.cell_size,
                                                                                 accuracy=accuracy),
                                        direction='u2=0')
             for step in list_of_steps:
@@ -766,20 +793,27 @@ class Script:
                                                        axis_value=(number_of_cells - 0.5) * self.truss.cell_size,
                                                        accuracy=accuracy)
             define_loadings(self.filename, step_name=step_name, affix="_Z", vertices=vertices,
-                            load_type="ConcentratedForce", load_type_letter="f", force=[0, applied_force / len(vertices), 0])
+                            load_type="ConcentratedForce", load_type_letter="f",
+                            force=[0, applied_force / len(vertices), 0])
             vertices = self.truss.find_points_in_plane(axis="y",
                                                        axis_value=(number_of_cells - 0.5) * self.truss.cell_size,
                                                        accuracy=accuracy)
             define_loadings(self.filename, step_name=step_name, affix="_Y", vertices=vertices,
-                            load_type="ConcentratedForce", load_type_letter="f", force=[0, 0, applied_force / len(vertices)])
+                            load_type="ConcentratedForce", load_type_letter="f",
+                            force=[0, 0, applied_force / len(vertices)])
             define_boundary_conditions(self.filename, step_name=step_name, affix='_Z',
-                                       vertices=self.truss.find_points_in_plane(axis="z", axis_value=-0.5 * self.truss.cell_size, accuracy=accuracy),
+                                       vertices=self.truss.find_points_in_plane(axis="z",
+                                                                                axis_value=-0.5 * self.truss.cell_size,
+                                                                                accuracy=accuracy),
                                        direction='u2=0')
             define_boundary_conditions(self.filename, step_name=step_name, affix='_Y',
-                                       vertices=self.truss.find_points_in_plane(axis="y", axis_value=-0.5 * self.truss.cell_size, accuracy=accuracy),
+                                       vertices=self.truss.find_points_in_plane(axis="y",
+                                                                                axis_value=-0.5 * self.truss.cell_size,
+                                                                                accuracy=accuracy),
                                        direction='u3=0')
             define_boundary_conditions(self.filename, step_name=step_name, affix='_X',
-                                       vertices=self.truss.find_points_in_plane(axis="x", axis_value=-0.5 * self.truss.cell_size,
+                                       vertices=self.truss.find_points_in_plane(axis="x",
+                                                                                axis_value=-0.5 * self.truss.cell_size,
                                                                                 accuracy=accuracy),
                                        direction='u1=0')
             for step in list_of_steps:
@@ -799,20 +833,27 @@ class Script:
                                                        axis_value=(number_of_cells - 0.5) * self.truss.cell_size,
                                                        accuracy=accuracy)
             define_loadings(self.filename, step_name=step_name, affix="_Y", vertices=vertices,
-                            load_type="ConcentratedForce", load_type_letter="f", force=[applied_force / len(vertices), 0, 0])
+                            load_type="ConcentratedForce", load_type_letter="f",
+                            force=[applied_force / len(vertices), 0, 0])
             vertices = self.truss.find_points_in_plane(axis="x",
                                                        axis_value=(number_of_cells - 0.5) * self.truss.cell_size,
                                                        accuracy=accuracy)
             define_loadings(self.filename, step_name=step_name, affix="_X", vertices=vertices,
-                            load_type="ConcentratedForce", load_type_letter="f", force=[0, applied_force / len(vertices), 0])
+                            load_type="ConcentratedForce", load_type_letter="f",
+                            force=[0, applied_force / len(vertices), 0])
             define_boundary_conditions(self.filename, step_name=step_name, affix='_Y',
-                                       vertices=self.truss.find_points_in_plane(axis="y", axis_value=-0.5 * self.truss.cell_size, accuracy=accuracy),
+                                       vertices=self.truss.find_points_in_plane(axis="y",
+                                                                                axis_value=-0.5 * self.truss.cell_size,
+                                                                                accuracy=accuracy),
                                        direction='u1=0')
             define_boundary_conditions(self.filename, step_name=step_name, affix='_X',
-                                       vertices=self.truss.find_points_in_plane(axis="x", axis_value=-0.5 * self.truss.cell_size, accuracy=accuracy),
+                                       vertices=self.truss.find_points_in_plane(axis="x",
+                                                                                axis_value=-0.5 * self.truss.cell_size,
+                                                                                accuracy=accuracy),
                                        direction='u2=0')
             define_boundary_conditions(self.filename, step_name=step_name, affix='_Z',
-                                       vertices=self.truss.find_points_in_plane(axis="z", axis_value=-0.5 * self.truss.cell_size,
+                                       vertices=self.truss.find_points_in_plane(axis="z",
+                                                                                axis_value=-0.5 * self.truss.cell_size,
                                                                                 accuracy=accuracy),
                                        direction='u3=0')
             for step in list_of_steps:
@@ -834,7 +875,8 @@ class Script:
             # define_loadings(self.filename, step_name=step_name, affix="", vertices=vertices,
             #                 load_type="Moment", load_type_letter="m",  force=[0, 0, applied_force / len(vertices)])
             # define_boundary_conditions(self.filename, step_name=step_name, affix='',
-            #                            vertices=self.truss.find_points_in_plane(axis="z", axis_value=-0.5*self.truss.cell_size,
+            #                            vertices=self.truss.find_points_in_plane(axis="z",
+            #                                                                     axis_value=-0.5*self.truss.cell_size,
             #                                                                     accuracy=accuracy),
             #                            direction='u1=0, u2=0')
             # for step in list_of_steps:
@@ -853,7 +895,8 @@ class Script:
             # define_loadings(self.filename, step_name=step_name, affix="", vertices=vertices,
             #                 load_type="Moment", load_type_letter="m",  force=[0, applied_force / len(vertices), 0])
             # define_boundary_conditions(self.filename, step_name=step_name, affix='',
-            #                            vertices=self.truss.find_points_in_plane(axis="y", axis_value=-0.5*self.truss.cell_size,
+            #                            vertices=self.truss.find_points_in_plane(axis="y",
+            #                                                                     axis_value=-0.5*self.truss.cell_size,
             #                                                                     accuracy=accuracy),
             #                            direction='u2=0, u3=0')
             # for step in list_of_steps:
@@ -872,7 +915,8 @@ class Script:
             # define_loadings(self.filename, step_name=step_name, affix="", vertices=vertices,
             #                 load_type="Moment", load_type_letter="m",  force=[applied_force / len(vertices), 0, 0])
             # define_boundary_conditions(self.filename, step_name=step_name, affix='',
-            #                            vertices=self.truss.find_points_in_plane(axis="x", axis_value=-0.5*self.truss.cell_size,
+            #                            vertices=self.truss.find_points_in_plane(axis="x",
+            #                                                                     axis_value=-0.5*self.truss.cell_size,
             #                                                                     accuracy=accuracy),
             #                            direction='u2=0, u3=0')
             #
@@ -887,7 +931,8 @@ class Script:
             # Set BC to last step. (It gets propagated to all the other steps)
             # c = self.truss.cell_size
             # define_boundary_conditions(self.filename, step_name=step_name, affix='_CORNER',
-            #                            vertices=self.truss.find_points_in_space([[-0.6 * c, 0.0 * c], [-0.6 * c, -0.4 * c],
+            #                            vertices=self.truss.find_points_in_space([[-0.6 * c, 0.0 * c],
+            #                                                                     [-0.6 * c, -0.4 * c],
             #                                                                     [-0.6 * c, -0.4 * c]]),
             #                            direction='u1=0, u2=0, u3=0, ur1=0, ur2=0, ur3=0')
 

@@ -64,8 +64,10 @@ def read_results(script, x):
             list_of_coordinates.append(float(point[direction]))
         displacement = statistics.median(list_of_coordinates)
         # print("Average displacement " + name + ": " + str(round(displacement * 1e6, 6)) + " μm")
-        young = abs(applied_force / ((script.truss.cell_size * script.truss.number_of_cells + script.truss.cells[0].strut_thicknesses[0]) * displacement))
-        # print("Elastic Modulus in " + name + " step into " + plane + " direction: " + str(round(young / 1e6, 3)) + " MPa")
+        young = abs(applied_force / ((script.truss.cell_size * script.truss.number_of_cells +
+                                      script.truss.cells[0].strut_thicknesses[0]) * displacement))
+        # print("Elastic Modulus in " + name + " step into " + plane +
+        #       " direction: " + str(round(young / 1e6, 3)) + " MPa")
         return young
 
     def read_shearing(result, name, plane, direction):
@@ -74,7 +76,8 @@ def read_results(script, x):
             list_of_coordinates.append(float(point[direction]))
         displacement = statistics.median(list_of_coordinates)
         # print("Average displacement " + name + ": " + str(round(displacement * 1e6, 3)) + " μm")
-        shear = abs(applied_force / ((script.truss.cell_size * script.truss.number_of_cells + script.truss.cells[0].strut_thicknesses[0]) * displacement))
+        shear = abs(applied_force / ((script.truss.cell_size * script.truss.number_of_cells +
+                                      script.truss.cells[0].strut_thicknesses[0]) * displacement))
         return shear
 
     def read_displacement(result, step, plane, direction):
@@ -128,63 +131,99 @@ def read_results(script, x):
 
     compliance_sigma = numpy.zeros([3, 3])
     compliance_sigma[0, 0] = 1 / output['Sigma_x']
-    compliance_sigma[1, 0] = -(read_displacement(results, 'SIGMA_X', 'SIGMA_Y_1', 1) - read_displacement(results, 'SIGMA_X', 'SIGMA_Y_2_Y', 1)) * length_cube / applied_force
-    compliance_sigma[2, 0] = -(read_displacement(results, 'SIGMA_X', 'SIGMA_Z_1', 2) - read_displacement(results, 'SIGMA_X', 'SIGMA_Z_2_Z', 2)) * length_cube / applied_force
-    compliance_sigma[0, 1] = -(read_displacement(results, 'SIGMA_Y', 'SIGMA_X_1', 0) - read_displacement(results, 'SIGMA_Y', 'SIGMA_X_2_X', 0)) * length_cube / applied_force
+    compliance_sigma[1, 0] = -(read_displacement(results, 'SIGMA_X', 'SIGMA_Y_1', 1) -
+                               read_displacement(results, 'SIGMA_X', 'SIGMA_Y_2_Y', 1)) * length_cube / applied_force
+    compliance_sigma[2, 0] = -(read_displacement(results, 'SIGMA_X', 'SIGMA_Z_1', 2) -
+                               read_displacement(results, 'SIGMA_X', 'SIGMA_Z_2_Z', 2)) * length_cube / applied_force
+    compliance_sigma[0, 1] = -(read_displacement(results, 'SIGMA_Y', 'SIGMA_X_1', 0) -
+                               read_displacement(results, 'SIGMA_Y', 'SIGMA_X_2_X', 0)) * length_cube / applied_force
     compliance_sigma[1, 1] = 1 / output['Sigma_y']
-    compliance_sigma[2, 1] = -(read_displacement(results, 'SIGMA_Y', 'SIGMA_Z_1', 2) - read_displacement(results, 'SIGMA_Y', 'SIGMA_Z_2_Z', 2)) * length_cube / applied_force
-    compliance_sigma[0, 2] = -(read_displacement(results, 'SIGMA_Z', 'SIGMA_X_1', 0) - read_displacement(results, 'SIGMA_X', 'SIGMA_X_2_X', 0)) * length_cube / applied_force
-    compliance_sigma[1, 2] = -(read_displacement(results, 'SIGMA_Z', 'SIGMA_Y_1', 1) - read_displacement(results, 'SIGMA_X', 'SIGMA_Y_2_Y', 1)) * length_cube / applied_force
+    compliance_sigma[2, 1] = -(read_displacement(results, 'SIGMA_Y', 'SIGMA_Z_1', 2) -
+                               read_displacement(results, 'SIGMA_Y', 'SIGMA_Z_2_Z', 2)) * length_cube / applied_force
+    compliance_sigma[0, 2] = -(read_displacement(results, 'SIGMA_Z', 'SIGMA_X_1', 0) -
+                               read_displacement(results, 'SIGMA_X', 'SIGMA_X_2_X', 0)) * length_cube / applied_force
+    compliance_sigma[1, 2] = -(read_displacement(results, 'SIGMA_Z', 'SIGMA_Y_1', 1) -
+                               read_displacement(results, 'SIGMA_X', 'SIGMA_Y_2_Y', 1)) * length_cube / applied_force
     compliance_sigma[2, 2] = 1 / output['Sigma_z']
 
     # Second Quarter:
     compliance_coupling2 = numpy.zeros([3, 3])
-    compliance_coupling2[0, 0] = (read_displacement(results, 'TAU_YZ', 'SIGMA_X_1', 0) - read_displacement(results, 'TAU_YZ', 'SIGMA_X_2_X', 0)) * length_cube / applied_force
-    compliance_coupling2[1, 0] = (read_displacement(results, 'TAU_YZ', 'SIGMA_Y_1', 1) - read_displacement(results, 'TAU_YZ', 'SIGMA_Y_2_Y', 1)) * length_cube / applied_force
-    compliance_coupling2[2, 0] = (read_displacement(results, 'TAU_YZ', 'SIGMA_Z_1', 2) - read_displacement(results, 'TAU_YZ', 'SIGMA_Z_2_Z', 2)) * length_cube / applied_force
-    compliance_coupling2[0, 1] = (read_displacement(results, 'TAU_XZ', 'SIGMA_X_1', 0) - read_displacement(results, 'TAU_XZ', 'SIGMA_X_2_X', 0)) * length_cube / applied_force
-    compliance_coupling2[1, 1] = (read_displacement(results, 'TAU_XZ', 'SIGMA_Y_1', 1) - read_displacement(results, 'TAU_XZ', 'SIGMA_Y_2_Y', 1)) * length_cube / applied_force
-    compliance_coupling2[2, 1] = (read_displacement(results, 'TAU_XZ', 'SIGMA_Z_1', 2) - read_displacement(results, 'TAU_XZ', 'SIGMA_Z_2_Z', 2)) * length_cube / applied_force
-    compliance_coupling2[0, 2] = (read_displacement(results, 'TAU_XY', 'SIGMA_X_1', 0) - read_displacement(results, 'TAU_XY', 'SIGMA_X_2_X', 0)) * length_cube / applied_force
-    compliance_coupling2[1, 2] = (read_displacement(results, 'TAU_XY', 'SIGMA_Y_1', 1) - read_displacement(results, 'TAU_XY', 'SIGMA_Y_2_Y', 1)) * length_cube / applied_force
-    compliance_coupling2[2, 2] = (read_displacement(results, 'TAU_XY', 'SIGMA_Z_1', 2) - read_displacement(results, 'TAU_XY', 'SIGMA_Z_2_Z', 2)) * length_cube / applied_force
+    compliance_coupling2[0, 0] = (read_displacement(results, 'TAU_YZ', 'SIGMA_X_1', 0) -
+                                  read_displacement(results, 'TAU_YZ', 'SIGMA_X_2_X', 0)) * length_cube / applied_force
+    compliance_coupling2[1, 0] = (read_displacement(results, 'TAU_YZ', 'SIGMA_Y_1', 1) -
+                                  read_displacement(results, 'TAU_YZ', 'SIGMA_Y_2_Y', 1)) * length_cube / applied_force
+    compliance_coupling2[2, 0] = (read_displacement(results, 'TAU_YZ', 'SIGMA_Z_1', 2) -
+                                  read_displacement(results, 'TAU_YZ', 'SIGMA_Z_2_Z', 2)) * length_cube / applied_force
+    compliance_coupling2[0, 1] = (read_displacement(results, 'TAU_XZ', 'SIGMA_X_1', 0) -
+                                  read_displacement(results, 'TAU_XZ', 'SIGMA_X_2_X', 0)) * length_cube / applied_force
+    compliance_coupling2[1, 1] = (read_displacement(results, 'TAU_XZ', 'SIGMA_Y_1', 1) -
+                                  read_displacement(results, 'TAU_XZ', 'SIGMA_Y_2_Y', 1)) * length_cube / applied_force
+    compliance_coupling2[2, 1] = (read_displacement(results, 'TAU_XZ', 'SIGMA_Z_1', 2) -
+                                  read_displacement(results, 'TAU_XZ', 'SIGMA_Z_2_Z', 2)) * length_cube / applied_force
+    compliance_coupling2[0, 2] = (read_displacement(results, 'TAU_XY', 'SIGMA_X_1', 0) -
+                                  read_displacement(results, 'TAU_XY', 'SIGMA_X_2_X', 0)) * length_cube / applied_force
+    compliance_coupling2[1, 2] = (read_displacement(results, 'TAU_XY', 'SIGMA_Y_1', 1) -
+                                  read_displacement(results, 'TAU_XY', 'SIGMA_Y_2_Y', 1)) * length_cube / applied_force
+    compliance_coupling2[2, 2] = (read_displacement(results, 'TAU_XY', 'SIGMA_Z_1', 2) -
+                                  read_displacement(results, 'TAU_XY', 'SIGMA_Z_2_Z', 2)) * length_cube / applied_force
 
     # Third Quarter:
     compliance_coupling3 = numpy.zeros([3, 3])
-    compliance_coupling3[0, 0] = (read_displacement(results, 'SIGMA_X', 'SIGMA_Z_1', 1) - read_displacement(results, 'SIGMA_X', 'SIGMA_Z_2_Z', 1)) * length_cube / applied_force
-    compliance_coupling3[1, 0] = (read_displacement(results, 'SIGMA_X', 'SIGMA_X_1', 2) - read_displacement(results, 'SIGMA_X', 'SIGMA_X_2_X', 2)) * length_cube / applied_force
-    compliance_coupling3[2, 0] = (read_displacement(results, 'SIGMA_X', 'SIGMA_Y_1', 0) - read_displacement(results, 'SIGMA_X', 'SIGMA_Y_2_Y', 0)) * length_cube / applied_force
-    compliance_coupling3[0, 1] = (read_displacement(results, 'SIGMA_Y', 'SIGMA_Z_1', 1) - read_displacement(results, 'SIGMA_Y', 'SIGMA_Z_2_Z', 1)) * length_cube / applied_force
-    compliance_coupling3[1, 1] = (read_displacement(results, 'SIGMA_Y', 'SIGMA_X_1', 2) - read_displacement(results, 'SIGMA_Y', 'SIGMA_X_2_X', 2)) * length_cube / applied_force
-    compliance_coupling3[2, 1] = (read_displacement(results, 'SIGMA_Y', 'SIGMA_Y_1', 0) - read_displacement(results, 'SIGMA_Y', 'SIGMA_Y_2_Y', 0)) * length_cube / applied_force
-    compliance_coupling3[0, 2] = (read_displacement(results, 'SIGMA_Z', 'SIGMA_Z_1', 1) - read_displacement(results, 'SIGMA_Z', 'SIGMA_Z_2_Z', 1)) * length_cube / applied_force
-    compliance_coupling3[1, 2] = (read_displacement(results, 'SIGMA_Z', 'SIGMA_X_1', 2) - read_displacement(results, 'SIGMA_Z', 'SIGMA_X_2_X', 2)) * length_cube / applied_force
-    compliance_coupling3[2, 2] = (read_displacement(results, 'SIGMA_Z', 'SIGMA_Y_1', 0) - read_displacement(results, 'SIGMA_Z', 'SIGMA_Y_2_Y', 0)) * length_cube / applied_force
+    compliance_coupling3[0, 0] = (read_displacement(results, 'SIGMA_X', 'SIGMA_Z_1', 1) -
+                                  read_displacement(results, 'SIGMA_X', 'SIGMA_Z_2_Z', 1)) * length_cube / applied_force
+    compliance_coupling3[1, 0] = (read_displacement(results, 'SIGMA_X', 'SIGMA_X_1', 2) -
+                                  read_displacement(results, 'SIGMA_X', 'SIGMA_X_2_X', 2)) * length_cube / applied_force
+    compliance_coupling3[2, 0] = (read_displacement(results, 'SIGMA_X', 'SIGMA_Y_1', 0) -
+                                  read_displacement(results, 'SIGMA_X', 'SIGMA_Y_2_Y', 0)) * length_cube / applied_force
+    compliance_coupling3[0, 1] = (read_displacement(results, 'SIGMA_Y', 'SIGMA_Z_1', 1) -
+                                  read_displacement(results, 'SIGMA_Y', 'SIGMA_Z_2_Z', 1)) * length_cube / applied_force
+    compliance_coupling3[1, 1] = (read_displacement(results, 'SIGMA_Y', 'SIGMA_X_1', 2) -
+                                  read_displacement(results, 'SIGMA_Y', 'SIGMA_X_2_X', 2)) * length_cube / applied_force
+    compliance_coupling3[2, 1] = (read_displacement(results, 'SIGMA_Y', 'SIGMA_Y_1', 0) -
+                                  read_displacement(results, 'SIGMA_Y', 'SIGMA_Y_2_Y', 0)) * length_cube / applied_force
+    compliance_coupling3[0, 2] = (read_displacement(results, 'SIGMA_Z', 'SIGMA_Z_1', 1) -
+                                  read_displacement(results, 'SIGMA_Z', 'SIGMA_Z_2_Z', 1)) * length_cube / applied_force
+    compliance_coupling3[1, 2] = (read_displacement(results, 'SIGMA_Z', 'SIGMA_X_1', 2) -
+                                  read_displacement(results, 'SIGMA_Z', 'SIGMA_X_2_X', 2)) * length_cube / applied_force
+    compliance_coupling3[2, 2] = (read_displacement(results, 'SIGMA_Z', 'SIGMA_Y_1', 0) -
+                                  read_displacement(results, 'SIGMA_Z', 'SIGMA_Y_2_Y', 0)) * length_cube / applied_force
 
     # Fourth Quarter:
-    output['Tau_yz'] = (read_shearing(results, 'TAU_YZ', 'SIGMA_Z_1', 1) + read_shearing(results, 'TAU_YZ', 'SIGMA_Y_1', 2)) / 2
-    output['Tau_xz'] = (read_shearing(results, 'TAU_XZ', 'SIGMA_X_1', 2) + read_shearing(results, 'TAU_XZ', 'SIGMA_Z_1', 0)) / 2
-    output['Tau_xy'] = (read_shearing(results, 'TAU_XY', 'SIGMA_Y_1', 0) + read_shearing(results, 'TAU_XY', 'SIGMA_X_1', 1)) / 2
+    output['Tau_yz'] = (read_shearing(results, 'TAU_YZ', 'SIGMA_Z_1', 1) +
+                        read_shearing(results, 'TAU_YZ', 'SIGMA_Y_1', 2)) / 2
+    output['Tau_xz'] = (read_shearing(results, 'TAU_XZ', 'SIGMA_X_1', 2) +
+                        read_shearing(results, 'TAU_XZ', 'SIGMA_Z_1', 0)) / 2
+    output['Tau_xy'] = (read_shearing(results, 'TAU_XY', 'SIGMA_Y_1', 0) +
+                        read_shearing(results, 'TAU_XY', 'SIGMA_X_1', 1)) / 2
     print("Shearing Modulus in yz direction: " + str(round(output['Tau_yz'] / 1e6, 3)) + " MPa")
     print("Shearing Modulus in xz direction: " + str(round(output['Tau_xz'] / 1e6, 3)) + " MPa")
     print("Shearing Modulus in xy direction: " + str(round(output['Tau_xy'] / 1e6, 3)) + " MPa")
 
-    output['Bending_yz'] = 12 / (script.truss.cell_size * script.truss.number_of_cells + script.truss.cells[0].strut_thicknesses[0]) ** 3 * output['Tau_yz']
-    output['Bending_xz'] = 12 / (script.truss.cell_size * script.truss.number_of_cells + script.truss.cells[0].strut_thicknesses[0]) ** 3 * output['Tau_xz']
-    output['Bending_xy'] = 12 / (script.truss.cell_size * script.truss.number_of_cells + script.truss.cells[0].strut_thicknesses[0]) ** 3 * output['Tau_xy']
+    # output['Bending_yz'] = 12 / (script.truss.cell_size * script.truss.number_of_cells +
+    #                              script.truss.cells[0].strut_thicknesses[0]) ** 3 * output['Tau_yz']
+    # output['Bending_xz'] = 12 / (script.truss.cell_size * script.truss.number_of_cells +
+    #                              script.truss.cells[0].strut_thicknesses[0]) ** 3 * output['Tau_xz']
+    # output['Bending_xy'] = 12 / (script.truss.cell_size * script.truss.number_of_cells +
+    #                              script.truss.cells[0].strut_thicknesses[0]) ** 3 * output['Tau_xy']
     # print("Bending Modulus in yz direction: " + str(round(output['Bending_yz'] / 1e12, 3)) + " Pa/mm^3")
     # print("Bending Modulus in xz direction: " + str(round(output['Bending_xz'] / 1e12, 3)) + " Pa/mm^3")
     # print("Bending Modulus in xy direction: " + str(round(output['Bending_xy'] / 1e12, 3)) + " Pa/mm^3")
 
     compliance_tau = numpy.zeros([3, 3])
     compliance_tau[0, 0] = 1 / output['Tau_yz']
-    compliance_tau[1, 0] = (read_displacement(results, 'TAU_YZ', 'SIGMA_Z_1', 0) - read_displacement(results, 'TAU_YZ', 'SIGMA_Z_2_Z', 0)) * length_cube / applied_force
-    compliance_tau[2, 0] = (read_displacement(results, 'TAU_YZ', 'SIGMA_Y_1', 0) - read_displacement(results, 'TAU_YZ', 'SIGMA_Y_2_Y', 0)) * length_cube / applied_force
-    compliance_tau[0, 1] = (read_displacement(results, 'TAU_XZ', 'SIGMA_Z_1', 1) - read_displacement(results, 'TAU_XZ', 'SIGMA_Z_2_Z', 1)) * length_cube / applied_force
+    compliance_tau[1, 0] = (read_displacement(results, 'TAU_YZ', 'SIGMA_Z_1', 0) -
+                            read_displacement(results, 'TAU_YZ', 'SIGMA_Z_2_Z', 0)) * length_cube / applied_force
+    compliance_tau[2, 0] = (read_displacement(results, 'TAU_YZ', 'SIGMA_Y_1', 0) -
+                            read_displacement(results, 'TAU_YZ', 'SIGMA_Y_2_Y', 0)) * length_cube / applied_force
+    compliance_tau[0, 1] = (read_displacement(results, 'TAU_XZ', 'SIGMA_Z_1', 1) -
+                            read_displacement(results, 'TAU_XZ', 'SIGMA_Z_2_Z', 1)) * length_cube / applied_force
     compliance_tau[1, 1] = 1 / output['Tau_xz']
-    compliance_tau[2, 1] = (read_displacement(results, 'TAU_XZ', 'SIGMA_X_1', 1) - read_displacement(results, 'TAU_XZ', 'SIGMA_X_2_X', 1)) * length_cube / applied_force
-    compliance_tau[0, 2] = (read_displacement(results, 'TAU_XY', 'SIGMA_Y_1', 2) - read_displacement(results, 'TAU_XY', 'SIGMA_Y_2_Y', 2)) * length_cube / applied_force
-    compliance_tau[1, 2] = (read_displacement(results, 'TAU_XY', 'SIGMA_X_1', 2) - read_displacement(results, 'TAU_XY', 'SIGMA_X_2_X', 2)) * length_cube / applied_force
+    compliance_tau[2, 1] = (read_displacement(results, 'TAU_XZ', 'SIGMA_X_1', 1) -
+                            read_displacement(results, 'TAU_XZ', 'SIGMA_X_2_X', 1)) * length_cube / applied_force
+    compliance_tau[0, 2] = (read_displacement(results, 'TAU_XY', 'SIGMA_Y_1', 2) -
+                            read_displacement(results, 'TAU_XY', 'SIGMA_Y_2_Y', 2)) * length_cube / applied_force
+    compliance_tau[1, 2] = (read_displacement(results, 'TAU_XY', 'SIGMA_X_1', 2) -
+                            read_displacement(results, 'TAU_XY', 'SIGMA_X_2_X', 2)) * length_cube / applied_force
     compliance_tau[2, 2] = 1 / output['Tau_xy']
 
     output['Compliance'] = numpy.zeros([6, 6])
@@ -213,8 +252,8 @@ def append_output_to_file(output, output_file):
     result_file.write(str(output['Step']) + ", " +
                       str(output['Truss_Name']) + ", " +
                       str(round(output['Fitness'], 3)) + ", " +
-                      str(round(output['Cell_Size'] * 1e3, 3)) + ", " +
-                      str(round(output['Strut_Thickness'] * 1e6, 3)) + ", ")
+                      str(round(output['Cell_Size'], 3)) + ", " +
+                      str(round(output['Strut_Thickness'] * 1e3, 3)) + ", ")
     counter = 0
     for cells in output['Pore_size']:
         for pore in cells:
@@ -222,12 +261,12 @@ def append_output_to_file(output, output_file):
             counter += 1
     for i in range(0, 4 - counter):
         result_file.write("None, ")
-    result_file.write(str(round(output['Sigma_z'] * 1e-6, 3)) + ", " +
-                      str(round(output['Sigma_y'] * 1e-6, 3)) + ", " +
-                      str(round(output['Sigma_x'] * 1e-6, 3)) + ", " +
-                      str(round(output['Tau_yz'] * 1e-6, 3)) + ", " +
-                      str(round(output['Tau_xz'] * 1e-6, 3)) + ", " +
-                      str(round(output['Tau_xy'] * 1e-6, 3)) + ", " +
+    result_file.write(str(round(output['Sigma_z'] * 1e-3, 3)) + ", " +
+                      str(round(output['Sigma_y'] * 1e-3, 3)) + ", " +
+                      str(round(output['Sigma_x'] * 1e-3, 3)) + ", " +
+                      str(round(output['Tau_yz'] * 1e-3, 3)) + ", " +
+                      str(round(output['Tau_xz'] * 1e-3, 3)) + ", " +
+                      str(round(output['Tau_xy'] * 1e-3, 3)) + ", " +
                       str(round(output['Bending_yz'] * 1e-12, 3)) + ", " +
                       str(round(output['Bending_xz'] * 1e-12, 3)) + ", " +
                       str(round(output['Bending_xy'] * 1e-12, 3)) + ", " +
@@ -239,10 +278,10 @@ def append_output_to_file(output, output_file):
     # str(round(output['Torsion_x'] * 1e-6, 3)) + ", ")
 
     try:
-        result_file.write(str(round(output['Volume'] * 1e9, 3)) + ", " +
+        result_file.write(str(round(output['Volume'], 3)) + ", " +
                           str(round(output['Porosity'] * 100, 3)) + ", " +
                           str(round(output['Void_ratio'] * 1, 3)) + ", " +
-                          str(round(output['Surface_Area'] * 1e6, 3)) + ", "
+                          str(round(output['Surface_Area'], 3)) + ", "
                           )
     except KeyError:
         result_file.write("None, None, None, None, ")
@@ -274,7 +313,7 @@ def pickle_input(x, truss_name, input_file):
 universal_counter = 0
 
 
-####################################################################################################################################################################################
+########################################################################################################################
 # BEGIN OF function
 
 
@@ -285,39 +324,43 @@ def objective_function(inputs, options):
     # PRINT INFO FROM INPUT
     print("Counter: " + str(universal_counter))
     print("Truss: " + str(inputs['truss_name']))
+    print("Strut Minimal Thickness: " + str(inputs['strut_min_thickness']))
     print("Strut Thickness Multiplier: " + str(inputs['strut_thickness_multiplicator']))
     print("Number of Cells: " + str(inputs['number_of_cells']))
-    print("Cell Size: " + str(round(inputs['cell_size'] * 1e3, 3)) + " mm")
-    print("Total Size: " + str(round(inputs['number_of_cells'] * inputs['cell_size'] * 1e3, 3)) + " mm")
+    print("Cell Size: " + str(round(inputs['cell_size'], 3)) + " mm")
+    print("Total Size: " + str(round(inputs['number_of_cells'] * inputs['cell_size'], 3)) + " mm")
     print("Cell Ratio: " + str(inputs['cell_ratio']) + "\n\n\n")
 
     # MULTIPLY strut_thicknesses WITH min_thickness
     thicknesses = list()
     fitness = 0
     for multiplicator in inputs['strut_thickness_multiplicator']:
-        if multiplicator > 0:
+        if multiplicator > 0 and inputs['strut_min_thickness'] > 0:
             thicknesses.append(inputs['strut_min_thickness'] * multiplicator)
         else:    # Blocks negative values for strut thicknesses
             thicknesses.append(abs(inputs['strut_min_thickness'] * multiplicator))
-            fitness += 1e9 * abs(multiplicator)
+            fitness += 1e9 * abs(multiplicator) * abs(inputs['strut_min_thickness'])
     filename = list()
     filename.append(inputs['calculating_directory'])
     filename.append(inputs['job_name'] + str(universal_counter))
     filename.append(".py")
     # GENERATE TRUSS
-    truss = generate_truss(truss_name=inputs['truss_name'], affix="",
-                           cell_size=inputs['cell_size'], strut_thicknesses=thicknesses, number_of_cells=inputs['number_of_cells'], cell_ratio=inputs['cell_ratio'])
+    truss = generate_truss(truss_name=inputs['truss_name'], affix="", cell_size=inputs['cell_size'],
+                           strut_thicknesses=thicknesses, number_of_cells=inputs['number_of_cells'],
+                           cell_ratio=inputs['cell_ratio'])
 
     # GENERATE SCRIPT
 
     # initialize.
-    model_script = Script(filename=filename, truss=truss, material=inputs['material'], abaqus_version=options['abaqus_version'])
+    model_script = Script(filename=filename, truss=truss, material=inputs['material'],
+                          abaqus_version=options['abaqus_version'])
     # generate wireframe and evaluate.
     model_script.evaluate(create_steps=options['create_steps'], submit_job=options['submit_job'],
                           read_output=options['read_output'], number_of_cells=inputs['number_of_cells'])
     # generate solid and export to stl.
     if options['stl_generate']:
-        model_script.generate_solid(strut_name=options['strut_cross_section'], cutoff=options['cutoff'], number_of_cells=inputs['number_of_cells'])
+        model_script.generate_solid(strut_name=options['strut_cross_section'], cutoff=options['cutoff'],
+                                    number_of_cells=inputs['number_of_cells'])
         model_script.export_stl()
 
     # saves the results from the simulation in a serialized pickle file.
@@ -340,23 +383,29 @@ def objective_function(inputs, options):
 
     # CALCULATE FITNESS
 
-    # Fit Bone Stiffness:
-    if False:
-        try:
-            fitness += (abs(output['Sigma_z'] - 15e9) / 100e6 + abs(output['Sigma_y'] - 11.5e9) / 100e6 + abs(output['Sigma_x'] - 11.5e9) / 100e6)
-        except KeyError:
-            print("No Fitness")
-            fitness = 1e9
-        try:
-            fitness += (output['Porosity'] - 0.4)
-        except KeyError:
-            print("Fitness is without porosity")
-        for values in inputs['strut_thickness_multiplicator']:
-            fitness += abs(1 / abs(values - 0.00050) * 1e-10)  # To encourage bigger struts and kill strut solutions equal 0
-
-    # Maximize auxesis:
-    if False:
-        fitness += output['v21'] + output['v31'] + output['v32']
+    for variable in options['fitness_variables']:
+        fitness += (abs(output[variable] - options['fitness_variables'][variable][0]) *
+                    options['fitness_variables'][variable][1]) * options['fitness_variables'][variable][2]
+    fitness /= len(options['fitness_variables'])
+    # # Fit Bone Stiffness:
+    # if False:
+    #     try:
+    #         fitness += (abs(output['Sigma_z'] - 15e9) / 100e6 +
+    #                     abs(output['Sigma_y'] - 11.5e9) / 100e6 +
+    #                     abs(output['Sigma_x'] - 11.5e9) / 100e6)
+    #     except KeyError:
+    #         print("No Fitness")
+    #         fitness = 1e9
+    #     for values in inputs['strut_thickness_multiplicator']:
+    #         fitness += abs(1 / abs(values - 0.00050) * 1e-10)
+    #         # To encourage bigger struts and kill strut solutions equal 0
+    #
+    # # Maximize auxesis:
+    # if False:
+    #     fitness += output['v21'] + output['v31'] + output['v32']
+    #
+    # if True:
+    #     fitness += abs(output['Porosity'] - 0.6) / 1e-3
 
     # SAFE OUTPUT INTO CSV FILE
     if options['read_output']:
@@ -365,17 +414,37 @@ def objective_function(inputs, options):
         append_output_to_file(output, inputs['output_file'] + '.csv')
 
     # SAFE INPUT VALUES AS A SERIALIZED PICKLE FILE
-    pickle_input(inputs['strut_thickness_multiplicator'], inputs['truss_name'], str(inputs['calculating_directory']) + str(inputs['job_name']) + str(universal_counter) + "_input")
+    pickle_input(inputs['strut_thickness_multiplicator'],
+                 inputs['truss_name'],
+                 str(inputs['calculating_directory']) +
+                 str(inputs['job_name']) +
+                 str(universal_counter) +
+                 "_input")
 
     # PLOT FITNESS
     if options['plot_fitness']:
+        pyplot.figure(1)
+        pyplot.subplot(311)
         pyplot.xlabel('Step')
         pyplot.ylabel('Fitness')
+        pyplot.ylim((100, 2000))
+        pyplot.scatter(universal_counter, fitness)
+        pyplot.legend()
+        pyplot.subplot(312)
+        pyplot.xlabel('Step')
+        pyplot.ylabel('Fitness')
+        pyplot.ylim((20, 100))
+        pyplot.scatter(universal_counter, fitness)
+        pyplot.legend()
+        pyplot.subplot(313)
+        pyplot.xlabel('Step')
+        pyplot.ylabel('Fitness')
+        pyplot.ylim((-5, 20))
         pyplot.scatter(universal_counter, fitness)
         pyplot.legend()
         pyplot.show()
         pyplot.pause(0.00001)
 
     print("Fitness: " + str(fitness))
-    print("#############################################################################################")
+    print("###########################################################################################################")
     return fitness
