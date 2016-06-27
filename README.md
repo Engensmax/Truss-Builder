@@ -7,7 +7,7 @@ First step: Fill out the wanted inputs and options that are given in truss_build
 
 Second step: Run truss_builder.py
 
-There are three possible methods to run:
+There are three possible methods to run: (See # METHOD in # OPTIONS)
 
 'single_run': Starts a single evaluation depending on the given inputs and options
 
