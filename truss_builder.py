@@ -11,9 +11,9 @@ pyplot.ion()
 def optimizer(x, input1, input2):
     # Apparently the optimization toolbox from scipy turns scalar x inputs into lists with 1 element.
     if len(x) == 1:
-        inputs[options['optimization_variables']] = x[0]
+        input1[options['optimization_variables']] = x[0]
     else:
-        inputs[options['optimization_variables']] = x
+        input1[options['optimization_variables']] = x
     return objective_function(input1, input2)
 
 
@@ -50,50 +50,57 @@ options = dict()
 ########################################################################################################################
 
 # SMALL LIBRARIES
-# Contains the number of different thicknesses on each cell
+# Contains the number of different thicknesses on each cell:
 truss_thicknesses_library = dict(cubes=3, body_centered_cubes=7, truncated_cubes=9, varying_truncated_cubes=9,
                                  face_diagonal_cubes=6, face_diagonal_cubes_alt=6, octetrahedrons=6, octahedrons=6,
                                  void_octetrahedrons=6, diamonds=4, templar_crosses=1, templar_alt_crosses=1,
                                  templar_alt2_crosses=1, pyramids=3, file_super_truss=1, tetroctas=20)
-# Contains the number of different ratios on each cell (for topology optimization)
+# Contains the number of different ratios on each cell (for topology optimization):
 truss_ratio_library = dict(cubes=0, body_centered_cubes=0, truncated_cubes=0, varying_truncated_cubes=1,
                            face_diagonal_cubes=0, face_diagonal_cubes_alt=0, octetrahedrons=0, octahedrons=0,
                            void_octetrahedrons=0, diamonds=0, templar_crosses=3, templar_alt_crosses=3,
                            templar_alt2_crosses=3, pyramids=1, file_super_truss=0, tetroctas=0)
-# Dictionary of materials
-material_library = dict(MED610=dict(name='MED610', E_Modulus=2.5e9, poisson_ratio=0.33),        # Med-grade Polymer
-                        PLA=dict(name='PLA', E_Modulus=2.5e9, poisson_ratio=0.33),              # Poly-lactic acid
-                        TCP=dict(name='TCP', E_Modulus=22e9, poisson_ratio=0.33),               # Tricalcium Phosphate
-                        HA=dict(name='HA', E_Modulus=6e9, poisson_ratio=0.33),                  # Hydroxyapatite
-                        Titanium=dict(name='Titanium', E_Modulus=116e9, poisson_ratio=0.32))
+# Dictionary of materials: E_Modulus: [N/mm^2] = [MPa]
+material_library = dict(MED610=dict(name='MED610', E_Modulus=2.5e3, poisson_ratio=0.33),        # Med-grade Polymer
+                        PLA=dict(name='PLA', E_Modulus=2.5e3, poisson_ratio=0.33),              # Poly-lactic acid
+                        TCP=dict(name='TCP', E_Modulus=22e3, poisson_ratio=0.33),               # Tricalcium Phosphate
+                        HA=dict(name='HA', E_Modulus=6e3, poisson_ratio=0.33),                  # Hydroxyapatite
+                        Titanium=dict(name='Titanium', E_Modulus=116e3, poisson_ratio=0.32),
+                        )
 
 ########################################################################################################################
 # INPUTS
-# Directory where abaqus loads and saves files. The directory will be created if it doesn't exist already:
+# Directory where abaqus loads and saves files. The directory will be created if it doesn't exist already.
+# This data is rather large:
 inputs['calculating_directory'] =  "C://abaqus_temp/"
-# Directory where outputs such as csv and pickle get saved. The directory will be created if it doesn't exist already:
-inputs['output_directory'] =       'C://Users/maxe/Dropbox/Master_Thesis/outputs/'
+# Directory where outputs such as csv and pickle get saved. The directory will be created if it doesn't exist already.
+# This data is very small:
+inputs['output_directory'] =       'C://Users/maxe/Dropbox/Master_Thesis/outputs/dump/'
 # Affix to every file in the calculating directory:
 inputs['job_name'] =               "temp_output"
-# Name (and therefore topology) of the truss. Multiple names can be put in to iterate through all
-inputs['truss_names'] =             ['cubes', 'face_diagonal_cubes_alt']
+# Name (and therefore topology) of the truss. Multiple names can be put in to iterate through all.
+# For a single input, put it in brackets. F.e. ['cubes']
+inputs['truss_names'] =             ['pyramids']
+# inputs['truss_names'] =             ['cubes', 'body_centered_cubes', 'truncated_cubes', 'face_diagonal_cubes_alt',
+#                                      'octetrahedrons', 'octahedrons', 'void_octetrahedrons', 'diamonds']
 # ['diamonds']
 # i didnt do 'pyramids' 'body_centered_cubes', 'truncated_cubes'
 
 # Material. See material_library to add or see materials.
-inputs['material'] =                                material_library['MED610']
+inputs['material'] =                                material_library['Titanium']
 
 # Cell topology
 # Number of cells in one direction (Total number of cells is number_of_cells ** 2):
 inputs['number_of_cells'] =                         3
 # Length of one cell (Total size is cell_size * number_of_cells):
-inputs['cell_size'] =                               1.5  # [mm]
+inputs['cell_size'] =                               10  # [mm]
 # Minimal Thickness that can be used:
-inputs['strut_min_thickness'] =                     0.3  # [mm]
+inputs['strut_min_thickness'] =                     3  # [mm]
 #
 inputs['strut_thickness_multiplier'] =              1
-inputs['cell_ratio'] =                              0.5
+inputs['cell_ratio_multiplier'] =                   0.8
 
+########################################################################################################################
 ########################################################################################################################
 # OPTIONS
 
@@ -102,7 +109,7 @@ options['create_steps'] =                           True
 # Submits the job and evaluates the created steps:
 options['submit_job'] =                             True
 # Generates the solid model of the truss and exports it into an stl-file. Needed to calculate volumetric outputs:
-options['stl_generate'] =                           True
+options['stl_generate'] =                           False
 # Cuts the borders of the truss off:
 options['cutoff'] =                                 True
 # Runs the program with the GUI (Generated User Interface). This blocks submitting of the job:
@@ -129,20 +136,25 @@ options['csv_view'] =                               False
 options['strut_cross_section'] =                    'dodecagon'
 # Version Input
 # To determine Version: use windows command prompt: "abaqus cae nogui" and then ">>> version" or ">>> print(version)"
-# If the student version is used
-# This is used for defining the path of where to find the abaqus_plugin stlExport.
-# See class Script __init__.
+# If the student version is used add SE in the end. F.e. '6.14-2SE'
+# This is used for defining the path of where to find the abaqus_plugin stlExport. See class Script : __init__()
 options['abaqus_version'] =                         '6.14-1'
 
 ########################################################################################################################
 # METHOD to run the engine. Possible entries are 'single_run', 'loop' or 'optimization'
-options['method'] =                                 'optimization'
+options['method'] =                                 'single_run'
 
-# LOOP specific
+# LOOP specific (applies for options['method'] == 'loop')
+# Loop over first variable:
 options['loop1_variable'] =                          'strut_min_thickness'
+# List of all the values to evaluate
 options['loop1_values'] =                            [0.1 * a for a in range(1, 11)]
 
+
+# Optional loop over second variable:
+# Use 'None' if there is to be no loop
 options['loop2_variable'] =                         'None'
+# Use [0] if there is to be no loop
 options['loop2_values'] =                           [0]
 
 # OPTIMIZATION specific
@@ -151,15 +163,40 @@ options['optimization_variables'] =                 'strut_min_thickness'
 # Bounds of the optimization variables. This only applies to some algorithms.
 options['bounds'] =                                 (0.2, 1)
 # Define Fitness variables, their target value, their norming and their weighting.
-options['fitness_variables'] =                      {'Porosity': [0.6, 1e3, 1], 'Sigma_z': [15e9, 1e-8, 1]}
+options['fitness_variables'] =                      {'Porosity': [0.65, 1e3, 1]}  # , 'Sigma_z': [15e3, 1e-8, 1]}
 # Plot the fitness while optimizing:
 options['plot_fitness'] =                           True
 # Defines the algorithm used for the optimization:
-options['algorithm'] =                              'CG'
+options['algorithm'] =                              'L-BFGS-B'
 # Possible algorithms:
 # 'Nelder-Mead', 'Powell', 'CG', 'BFGS', 'Newton-CG', 'L-BFGS-B', 'TNC', 'COBYLA', 'SLSQP', 'dogleg', 'trust-ncg'
 # Options for the optimization. See scipy optimization toolbox for further info:
-options['options'] =                                {'disp': True, 'maxiter': 10, 'eps': 0.01}
+options['options'] =                                {'disp': True, 'maxiter': 10, 'maxfun': 20}
+
+########################################################################################################################
+# OUTPUT
+
+# Decide what to save in the csv
+options['output'] = dict()
+# General:
+options['output']['Step'] =                         True
+options['output']['Truss_Name'] =                   True
+options['output']['Fitness'] =                      True
+# Geometric properties:
+options['output']['Cell_size'] =                    True
+options['output']['Strut_Thickness'] =              True  # =Strut_Thicknesses[0]
+options['output']['Pore_size'] =                    True
+# Mechanic properties:
+options['output']["Young's Modulus"] =              True
+options['output']['Shearing Modulus'] =             True
+options['output']["Poisson's Ratio"] =              True
+# Volumetric properties: (will only be calculated if the STL is generated)
+options['output']['Volume'] =                       True
+options['output']['Porosity'] =                     True
+options['output']['Void_ratio'] =                   True
+options['output']['Surface_Area'] =                 True
+# Optimization properties:
+options['output']['X'] =                            True  # Strut_Thickness_Multiplicator
 
 ########################################################################################################################
 ########################################################################################################################
@@ -189,7 +226,7 @@ if not os.path.exists(inputs['output_directory']):
 for name in inputs['truss_names']:
     inputs['truss_name'] = name
 
-    bounds[options['optimization_variables']] = options['bounds']
+    bounds[options['optimization_variables']] = [options['bounds']]
 
     inputs['strut_thickness_multiplicator'] =         list()
     # Multiplied by strut_min_thickness results in the actual thickness of the struts
@@ -198,13 +235,13 @@ for name in inputs['truss_names']:
     for i in range(0, truss_thicknesses_library[name]):
         inputs['strut_thickness_multiplicator'].append(inputs['strut_thickness_multiplier'])
         bounds['strut_thickness_multiplicator'].append(options['bounds'])
-    # Best thicknesses for titanium
+    # Best thicknesses for titanium (1.5mm cell_size)(0.1mm strut_min_thickness) (3x3x3)
     # inputs['strut_thickness_multiplicator'] =         [4.71177218, 4.14965115, 4.80241845]
 
     inputs['cell_ratio'] =                            list()
     bounds['cell_ratio'] =                            list()
     for j in range(0, truss_ratio_library[name]):
-        inputs['cell_ratio'].append(inputs['cell_ratio'])
+        inputs['cell_ratio'].append(inputs['cell_ratio_multiplier'])
         bounds['cell_ratio'].append(options['bounds'])
     # Best ratio for templar_alt2_crosses:
     # inputs['cell_ratio'] =                              [0.3, 0.8, 0.2]
@@ -213,12 +250,35 @@ for name in inputs['truss_names']:
 
     if options['overwrite_csv']:
         result_file = open(str(inputs['output_file']) + '.csv', 'w')
-        result_file.write("Step, Truss Name, Fitness, Cell Size [mm], Strut_Thickness [µm], "
-                          "Pore Size 1[µm], Pore Size 2[µm], Pore Size 3[µm], Pore Size 4[µm], Sigma_z [MPa], "
-                          "Sigma_y [MPa], Sigma_x [MPa], Tau_yz [MPa], Tau_xz [MPa], Tau_xy [MPa], "
-                          "Bending_yz [Pa/m^2], Bending_xz [Pa/m^2], Bending_xy [Pa/m^2], "
-                          "v21 [1], v31 [1], v32 [1], Volume [mm^3], Porosity [%], "
-                          "Void_ratio [1], Surface_Area [mm^2], Strut_Thickness_Multiplicator [1]\n")
+        if options['output']['Step']:
+            result_file.write('Step, ')
+        if options['output']['Truss_Name']:
+            result_file.write('Truss Name, ')
+        if options['output']['Fitness']:
+            result_file.write('Fitness, ')
+        if options['output']['Cell_size']:
+            result_file.write('Cell Size [mm], ')
+        if options['output']['Strut_Thickness']:
+            result_file.write('Strut Thickness [µm], ')
+        if options['output']['Pore_size']:
+            result_file.write('Pore Size 1[µm], Pore Size 2[µm], Pore Size 3[µm], Pore Size 4[µm], ')
+        if options['output']["Young's Modulus"]:
+            result_file.write('Sigma_z [MPa], Sigma_y [MPa], Sigma_x [MPa], ')
+        if options['output']['Shearing Modulus']:
+            result_file.write('Tau_yz [MPa], Tau_xz [MPa], Tau_xy [MPa], ')
+        if options['output']["Poisson's Ratio"]:
+            result_file.write('v21 [1], v31 [1], v32 [1], ')
+        if options['output']['Volume']:
+            result_file.write('Volume [mm^3], ')
+        if options['output']['Porosity']:
+            result_file.write('Porosity [%], ')
+        if options['output']['Void_ratio']:
+            result_file.write('Void_ratio [1], ')
+        if options['output']['Surface_Area']:
+            result_file.write('Surface_Area [mm^2], ')
+        if options['output']['X']:
+            result_file.write('Strut_Thickness_Multiplicator [1], ')
+        result_file.write('\n')
         result_file.close()
 
     if options['overwrite_pickle']:
@@ -232,9 +292,11 @@ for name in inputs['truss_names']:
     ####################################################################################################################
     # Calling the engine, depending on the chosen method
     if options['method'] == 'single_run':
+        options['plot_fitness'] = False
         objective_function(inputs=inputs, options=options)
 
     elif options['method'] == 'loop':
+        options['plot_fitness'] = False
         for loop1 in options['loop1_values']:
             for loop2 in options['loop2_values']:
                 inputs[options['loop1_variable']] = loop1
@@ -242,6 +304,14 @@ for name in inputs['truss_names']:
                 objective_function(inputs=inputs, options=options)
 
     elif options['method'] == 'optimization':
+        print("Optimization Input:")
+        print("xo= " + str(inputs[options['optimization_variables']]))
+        print("inputs= " + str(inputs) + ", " + str(options))
+        print("options= " + str(options))
+        print("method= " + str(options['algorithm']))
+        print("bounds= " + str(bounds[options['optimization_variables']]))
+        print("options= " + str(options['options']))
+        print("#################################################################################################\n\n\n")
         result = optimize.minimize(optimizer,
                                    x0=inputs[options['optimization_variables']],
                                    args=(inputs,
@@ -250,6 +320,7 @@ for name in inputs['truss_names']:
                                    bounds=bounds[options['optimization_variables']],
                                    options=options['options'])
         print(result)
+        print("#################################################################################################\n\n\n")
     else:
         print("options['method'] does not contain a valid keyword. possible entries are: "
               "'single_run', 'loop' or 'optimization'.")
@@ -257,4 +328,3 @@ for name in inputs['truss_names']:
 
     if options['csv_view']:
         open_csv(str(inputs['output_file']) + '.csv')
-

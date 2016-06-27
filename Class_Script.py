@@ -302,8 +302,8 @@ def get_area(script, filename, cutoff):
                "print('Results: ' + str(results['Surface_Area']))\n")
     if cutoff:
         if script.truss.name == "cubes" or script.truss.name == "body_centered_cubes" or \
-                        script.truss.name == "octetrahedrons" or script.truss.name == "face_diagonal_cubes_alt" or \
-                        script.truss.name == "void_octetrahedrons":
+                script.truss.name == "octetrahedrons" or script.truss.name == "face_diagonal_cubes_alt" or \
+                script.truss.name == "void_octetrahedrons":
             file.write("area_error=-6 * a.getArea(a.instances['" + filename[1] +
                        "-1'].faces.findAt(((" + str(script.truss.cells[0].strut_thicknesses[0] / 32 -
                                                     script.truss.cell_size / 2) +
@@ -415,7 +415,7 @@ def assign_material_to_wire(filename, truss, material_name):
 
 
 # MESHES THE TRUSS
-def mesh_part(filename, truss, mesh_size):
+def mesh_part(filename, mesh_size):
     file = open("".join(filename), "a")
     file.write("a = mdb.models['Model-1'].rootAssembly\n"
                "p = mdb.models['Model-1'].parts['Part-1']\n"
@@ -468,7 +468,7 @@ def define_boundary_conditions(filename, step_name, affix, vertices, direction):
                "_BC', createStepName='" + str(step_name) + "', region=a.Set(vertices=fixes, name='" +
                str(step_name) + "_2" + str(affix) + "'), localCsys=None, " + str(direction) + ")\n")
     file.close()
-    # condition_type:
+    # condition_types:
     # Encastre
     # Pinned
     # Xsymm
@@ -632,12 +632,14 @@ class Script:
 
     # GENERATE FEA FROM WIREFRAME BEAM ELEMENTS
     def evaluate(self, create_steps, submit_job, read_output, number_of_cells):
-        applied_force = 1
+
+        applied_force = 1  # [N]. This is also defined in evaluation.py : def read_results()
+
         generate_wireframe(self.filename, truss=self.truss)
         define_material(self.filename, material_name=self.material['name'], young_modulus=self.material['E_Modulus'],
                         poisson_ratio=self.material['poisson_ratio'])
         assign_material_to_wire(self.filename, self.truss, material_name=self.material['name'])  # "MED610"2.5e9, 0.33
-        mesh_part(self.filename, self.truss, mesh_size=self.truss.cell_size / 3)
+        mesh_part(self.filename, mesh_size=self.truss.cell_size / 3)
         list_of_steps = list()
 
         # CREATE THE DIFFERENT STEPS/LOADING CONDITIONS
@@ -865,77 +867,6 @@ class Script:
             request_field_output(self.filename, step_name=step_name, output_name="OUTPUT_XY")
             list_of_steps.append(step_name)
 
-            # TORSION_Z
-
-            # step_name = "TORSION_Z"
-            # create_static_step(self.filename, step_name=step_name)
-            # vertices = self.truss.find_points_in_plane(axis="z",
-            #                                            axis_value=(number_of_cells - 0.5) * self.truss.cell_size,
-            #                                            accuracy=accuracy)
-            # define_loadings(self.filename, step_name=step_name, affix="", vertices=vertices,
-            #                 load_type="Moment", load_type_letter="m",  force=[0, 0, applied_force / len(vertices)])
-            # define_boundary_conditions(self.filename, step_name=step_name, affix='',
-            #                            vertices=self.truss.find_points_in_plane(axis="z",
-            #                                                                     axis_value=-0.5*self.truss.cell_size,
-            #                                                                     accuracy=accuracy),
-            #                            direction='u1=0, u2=0')
-            # for step in list_of_steps:
-            #     deactivate_boundary_conditions(self.filename, step_name=step_name, deactivate_step_name=step)
-            #     deactivate_loadings(self.filename, step_name=step_name, deactivate_step_name=step)
-            # request_field_output(self.filename, step_name=step_name, output_name="OUTPUT_TZ")
-            # list_of_steps.append(step_name)
-
-            # TORSION_Y
-
-            # step_name = "TORSION_Y"
-            # create_static_step(self.filename, step_name=step_name)
-            # vertices = self.truss.find_points_in_plane(axis="y",
-            #                                            axis_value=(number_of_cells - 0.5) * self.truss.cell_size,
-            #                                            accuracy=accuracy)
-            # define_loadings(self.filename, step_name=step_name, affix="", vertices=vertices,
-            #                 load_type="Moment", load_type_letter="m",  force=[0, applied_force / len(vertices), 0])
-            # define_boundary_conditions(self.filename, step_name=step_name, affix='',
-            #                            vertices=self.truss.find_points_in_plane(axis="y",
-            #                                                                     axis_value=-0.5*self.truss.cell_size,
-            #                                                                     accuracy=accuracy),
-            #                            direction='u2=0, u3=0')
-            # for step in list_of_steps:
-            #     deactivate_boundary_conditions(self.filename, step_name=step_name, deactivate_step_name=step)
-            #     deactivate_loadings(self.filename, step_name=step_name, deactivate_step_name=step)
-            # request_field_output(self.filename, step_name=step_name, output_name="OUTPUT_TY")
-            # list_of_steps.append(step_name)
-
-            # TORSION_X
-
-            # step_name = "TORSION_X"
-            # create_static_step(self.filename, step_name=step_name)
-            # vertices = self.truss.find_points_in_plane(axis="x",
-            #                                            axis_value=(number_of_cells - 0.5) * self.truss.cell_size,
-            #                                            accuracy=accuracy)
-            # define_loadings(self.filename, step_name=step_name, affix="", vertices=vertices,
-            #                 load_type="Moment", load_type_letter="m",  force=[applied_force / len(vertices), 0, 0])
-            # define_boundary_conditions(self.filename, step_name=step_name, affix='',
-            #                            vertices=self.truss.find_points_in_plane(axis="x",
-            #                                                                     axis_value=-0.5*self.truss.cell_size,
-            #                                                                     accuracy=accuracy),
-            #                            direction='u2=0, u3=0')
-            #
-            # for step in list_of_steps:
-            #     deactivate_boundary_conditions(self.filename, step_name=step_name, deactivate_step_name=step)
-            #     deactivate_loadings(self.filename, step_name=step_name, deactivate_step_name=step)
-            # request_field_output(self.filename, step_name=step_name, output_name="OUTPUT_TX")
-            # list_of_steps.append(step_name)
-            #
-
-            # HOLD ONE CORNER
-            # Set BC to last step. (It gets propagated to all the other steps)
-            # c = self.truss.cell_size
-            # define_boundary_conditions(self.filename, step_name=step_name, affix='_CORNER',
-            #                            vertices=self.truss.find_points_in_space([[-0.6 * c, 0.0 * c],
-            #                                                                     [-0.6 * c, -0.4 * c],
-            #                                                                     [-0.6 * c, -0.4 * c]]),
-            #                            direction='u1=0, u2=0, u3=0, ur1=0, ur2=0, ur3=0')
-
         if submit_job:
             submit(self.filename, job_name=self.filename[1])
         if read_output:
@@ -945,12 +876,8 @@ class Script:
             read_odb_step(self.filename, 'TAU_YZ', job_name=self.filename[1])
             read_odb_step(self.filename, 'TAU_XZ', job_name=self.filename[1])
             read_odb_step(self.filename, 'TAU_XY', job_name=self.filename[1])
-            # read_odb_step(self.filename, 'TORSION_Z', job_name=self.filename[1])
-            # read_odb_step(self.filename, 'TORSION_Y', job_name=self.filename[1])
-            # read_odb_step(self.filename, 'TORSION_X', job_name=self.filename[1])
 
-            # EXTRACTS THE RESULTS AS A DIRECTORY(PYTHON STRUCTURE) IN A BINARY PICKLE FILE
-
+# EXTRACTS THE RESULTS AS A DIRECTORY(PYTHON STRUCTURE) IN A BINARY PICKLE FILE
     def pickle_dump(self):
 
         file = open("".join(self.filename), "a")

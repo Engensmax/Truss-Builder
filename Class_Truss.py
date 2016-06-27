@@ -31,9 +31,9 @@ class Truss:
                        axis_value + accuracy:
                         check = True
                         for point in list_of_points:
-                            if abs(node[0] - point[0]) < 1e-9 and \
-                               abs(node[1] - point[1]) < 1e-9 and \
-                               abs(node[2] - point[2]) < 1e-9:
+                            if abs(node[0] - point[0]) < 1e-3 and \
+                               abs(node[1] - point[1]) < 1e-3 and \
+                               abs(node[2] - point[2]) < 1e-3:
                                 check = False
                         if check:
                             list_of_points.append(node)
@@ -52,9 +52,9 @@ class Truss:
                         if boundaries[2][0] <= node[2] <= boundaries[2][1]:
                             check = True
                             for point in list_of_points:
-                                if abs(node[0] - point[0]) < 1e-9 and \
-                                   abs(node[1] - point[1]) < 1e-9 and \
-                                   abs(node[2] - point[2]) < 1e-9:
+                                if abs(node[0] - point[0]) < 1e-3 and \
+                                   abs(node[1] - point[1]) < 1e-3 and \
+                                   abs(node[2] - point[2]) < 1e-3:
                                     check = False
                             if check:
                                 list_of_points.append(node)

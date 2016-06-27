@@ -9,11 +9,15 @@ import numpy
 # file_path = 'C://abaqus_temp/temp_optimization2_input'
 # file_path = "/abaqus_temp2/temp_optimization1_results"
 # file_path = "C:/Users/Maxe-PC2/Dropbox/Master_Thesis/outputs/dump/output_optimization_cubes_pickle"
-file_path = "C:/Users\maxe\Dropbox\Master_Thesis\outputs\optimization\BFGS\Titanium_Bone\cubes_input"
+# file_path = "C:/Users\maxe\Dropbox\Master_Thesis\outputs\optimization\BFGS\Titanium_Bone\cubes_input"
+file_path = "C://abaqus_temp/temp_output154_results"
 
 with open('' + str(file_path), 'rb') as f:
-    u = pickle.Unpickler(f)
-    p = u.load()
+    # u = pickle._Unpickler(f)
+    # u.encoding = 'latin1'
+    # p = u.load()
+    picki = pickle.Unpickler(f)
+    p= picki.load()
     step = 'SIGMA_Z'
     plane = 'SIGMA_X_1'
     direction = 0

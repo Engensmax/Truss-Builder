@@ -2,17 +2,14 @@
 
 
 package python << frame >> {
-together {
-class main  << (M,cyan) >> {
-+open_csv()
-}
 
-class optimization  << (M,cyan) >> {
+
+class truss_builder  << (M,cyan) >> {
 +open_csv()
 +optimizer()
 +plot_output()
 }
-}
+
 class evaluation  << (F,yellow) >> {
 +objective_function()
 ..
@@ -92,8 +89,7 @@ material
 truss
 }
 
-main --> evaluation : objective_function(inputs,options)
-optimization --> evaluation : def optimizer(inputs,options, optimization_variables) \n objective_function(inputs*, options)
+truss_builder --> evaluation : objective_function(inputs,options)
 evaluation o--o Class_Script
 evaluation --> library_truss : generate_truss()
 library_truss -left-> library_cell : generate_cell()
@@ -121,5 +117,5 @@ package output << frame >> {
 evaluation --|> output.csv : save as
 evaluation --|> output.pickle : save as
 }
-evaluation --> optimization : return fitness
+evaluation --> truss_builder : return fitness
 @enduml

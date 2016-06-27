@@ -1158,13 +1158,15 @@ def generate_cell(cell_name, affix, strut_thicknesses, cell_size, ratio):
 
     elif cell_name == "file_super_truss":
         # NODES: Describe the nodes in cartesian coordinates.
-        cell_node_coordinates = csv_reader.csv_read_nodes("C:\\Users/Maxe-PC2/Desktop/code_and_csv/1nC[10]tL[1]tG[1]uL[1000]di[200]/nodes.csv", 0)
+        cell_node_coordinates = csv_reader.csv_read_nodes("C:\\Users/Maxe-PC2/Desktop/code_and_csv/"
+                                                          "1nC[10]tL[1]tG[1]uL[1000]di[200]/nodes.csv", 0)
         # for x in range(0, len(cell_node_coordinates)):
         #     for y in range(0, 3):
         #         cell_node_coordinates[x][y] -= 1/2
 
         # CONNECTIONS: Describes the connections via the nodes.
-        node_connections = csv_reader.csv_read_mems("C:\\Users/Maxe-PC2/Desktop/code_and_csv/1nC[10]tL[1]tG[1]uL[1000]di[200]/mems.csv", 0)
+        node_connections = csv_reader.csv_read_mems("C:\\Users/Maxe-PC2/Desktop/code_and_csv/"
+                                                    "1nC[10]tL[1]tG[1]uL[1000]di[200]/mems.csv", 0)
 
         # PORE SIZE: Describes the pore size of the Cell in standard size 1.
         # It is described by the diameter of the biggest fitting sphere in the cell

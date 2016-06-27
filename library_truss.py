@@ -10,9 +10,9 @@ def generate_truss(truss_name, affix, cell_size, strut_thicknesses, number_of_ce
     cells = list()
     nodes = list()
     if (truss_name == "cubes" or truss_name == "body_centered_cubes" or truss_name == "octahedrons" or
-        truss_name == "truncated_cubes" or truss_name == "diamonds" or truss_name == "varying_truncated_cubes" or
-        truss_name == "face_diagonal_cubes" or truss_name == "octetrahedrons" or truss_name == "void_octetrahedrons" or
-        truss_name == "templar_crosses" or truss_name == "templar_alt_crosses" or truss_name == "tetroctas"):
+       truss_name == "truncated_cubes" or truss_name == "diamonds" or truss_name == "varying_truncated_cubes" or
+       truss_name == "face_diagonal_cubes" or truss_name == "octetrahedrons" or truss_name == "void_octetrahedrons" or
+       truss_name == "templar_crosses" or truss_name == "templar_alt_crosses" or truss_name == "tetroctas"):
         cells.append(generate_cell(cell_name=truss_name[:len(truss_name) - 1], affix="",
                                    strut_thicknesses=strut_thicknesses, cell_size=cell_size, ratio=cell_ratio))
         for x in range(0, number_of_cells):
@@ -87,10 +87,15 @@ def generate_truss(truss_name, affix, cell_size, strut_thicknesses, number_of_ce
     else:
         print("Possible Names are: \n"
               "cubes\nbody_centered_cubes\noctahedrons\ntruncated_cubes\npyramids\ndiamonds\nvarying_truncated_cubes\n"
-              "face_diagonal_cubes\nface_diagonal_cubes_alt\noctetrahedrons\nvoid_octetrahedrons\ntemplar_crosses\ntemplar_alt_crosses\nfile_super_truss")
+              "face_diagonal_cubes\nface_diagonal_cubes_alt\noctetrahedrons\nvoid_octetrahedrons\ntemplar_crosses\n"
+              "templar_alt_crosses\nfile_super_truss")
         nodes = None
         cells = None
         exit("ERROR: truss_name specified is not defined in the library")
 
-    truss = Truss(name=(truss_name + affix), nodes=nodes, cells=cells, cell_size=cell_size, number_of_cells=number_of_cells)
+    truss = Truss(name=(truss_name + affix),
+                  nodes=nodes,
+                  cells=cells,
+                  cell_size=cell_size,
+                  number_of_cells=number_of_cells)
     return truss

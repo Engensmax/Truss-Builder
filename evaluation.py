@@ -34,10 +34,6 @@ def run(script, gui):
 
     if gui:
         subprocess.run('abaqus cae script=' + "".join(script.filename), shell=True)
-    # This program has a bug, if running with gui. To run with gui, go to Class_Script.py and disable the marked
-    # line in the function def submit(filename, job_name). It is recommended to also disable the line
-    # Model_Script.evaluate() in evaluation.py. If you want to see the simulation output,
-    # it is recommended to run without gui and then open the odb with odb_viewer(Model_Script)
     else:
         subprocess.run('abaqus cae noGUI=' + "".join(script.filename), shell=True)
     t1 = time.time()
@@ -63,7 +59,7 @@ def read_results(script, x):
         for point in result[name][plane]:
             list_of_coordinates.append(float(point[direction]))
         displacement = statistics.median(list_of_coordinates)
-        # print("Average displacement " + name + ": " + str(round(displacement * 1e6, 6)) + " μm")
+        # print("Average displacement " + name + ": " + str(round(displacement * 1e3, 3)) + " μm")
         young = abs(applied_force / ((script.truss.cell_size * script.truss.number_of_cells +
                                       script.truss.cells[0].strut_thicknesses[0]) * displacement))
         # print("Elastic Modulus in " + name + " step into " + plane +
@@ -93,7 +89,8 @@ def read_results(script, x):
         u = pickle._Unpickler(f)
         u.encoding = 'latin1'
         results = u.load()
-    applied_force = 1
+
+    applied_force = 1  # [N]. This is also defined in Class_Script.py : def evaluate()
 
     output = dict()
     output['X'] = x
@@ -111,11 +108,11 @@ def read_results(script, x):
         print("Pore Sizes: ")
         for cells in script.truss.cells:
             for pore in cells.pore_size:
-                print(str(round(pore * 1e6, 3)) + " μm, ")
-        output['Volume'] = results['Volume']
+                print(str(round(pore * 1e3, 3)) + " μm, ")
+        output['Volume'] = results['Volume']  # mm^3
         output['Porosity'] = porosity
         output['Void_ratio'] = porosity / (1 - porosity)
-        output['Surface_Area'] = results['Surface_Area']
+        output['Surface_Area'] = results['Surface_Area']  # mm^2
     except KeyError:
         print("This Evaluation is done without calculating Porosity or Volume")
     # Calculate Compliance Matrix
@@ -125,9 +122,9 @@ def read_results(script, x):
     output['Sigma_x'] = read_stress(results, 'SIGMA_X', 'SIGMA_X_1', 0)
     output['Sigma_y'] = read_stress(results, 'SIGMA_Y', 'SIGMA_Y_1', 1)
     output['Sigma_z'] = read_stress(results, 'SIGMA_Z', 'SIGMA_Z_1', 2)
-    print("Elastic Modulus in X direction: " + str(round(output['Sigma_x'] / 1e6, 3)) + " MPa")
-    print("Elastic Modulus in Y direction: " + str(round(output['Sigma_y'] / 1e6, 3)) + " MPa")
-    print("Elastic Modulus in Z direction: " + str(round(output['Sigma_z'] / 1e6, 3)) + " MPa")
+    print("Elastic Modulus in X direction: " + str(round(output['Sigma_x'], 3)) + " MPa")
+    print("Elastic Modulus in Y direction: " + str(round(output['Sigma_y'], 3)) + " MPa")
+    print("Elastic Modulus in Z direction: " + str(round(output['Sigma_z'], 3)) + " MPa")
 
     compliance_sigma = numpy.zeros([3, 3])
     compliance_sigma[0, 0] = 1 / output['Sigma_x']
@@ -195,19 +192,9 @@ def read_results(script, x):
                         read_shearing(results, 'TAU_XZ', 'SIGMA_Z_1', 0)) / 2
     output['Tau_xy'] = (read_shearing(results, 'TAU_XY', 'SIGMA_Y_1', 0) +
                         read_shearing(results, 'TAU_XY', 'SIGMA_X_1', 1)) / 2
-    print("Shearing Modulus in yz direction: " + str(round(output['Tau_yz'] / 1e6, 3)) + " MPa")
-    print("Shearing Modulus in xz direction: " + str(round(output['Tau_xz'] / 1e6, 3)) + " MPa")
-    print("Shearing Modulus in xy direction: " + str(round(output['Tau_xy'] / 1e6, 3)) + " MPa")
-
-    # output['Bending_yz'] = 12 / (script.truss.cell_size * script.truss.number_of_cells +
-    #                              script.truss.cells[0].strut_thicknesses[0]) ** 3 * output['Tau_yz']
-    # output['Bending_xz'] = 12 / (script.truss.cell_size * script.truss.number_of_cells +
-    #                              script.truss.cells[0].strut_thicknesses[0]) ** 3 * output['Tau_xz']
-    # output['Bending_xy'] = 12 / (script.truss.cell_size * script.truss.number_of_cells +
-    #                              script.truss.cells[0].strut_thicknesses[0]) ** 3 * output['Tau_xy']
-    # print("Bending Modulus in yz direction: " + str(round(output['Bending_yz'] / 1e12, 3)) + " Pa/mm^3")
-    # print("Bending Modulus in xz direction: " + str(round(output['Bending_xz'] / 1e12, 3)) + " Pa/mm^3")
-    # print("Bending Modulus in xy direction: " + str(round(output['Bending_xy'] / 1e12, 3)) + " Pa/mm^3")
+    print("Shearing Modulus in yz direction: " + str(round(output['Tau_yz'], 3)) + " MPa")
+    print("Shearing Modulus in xz direction: " + str(round(output['Tau_xz'], 3)) + " MPa")
+    print("Shearing Modulus in xy direction: " + str(round(output['Tau_xy'], 3)) + " MPa")
 
     compliance_tau = numpy.zeros([3, 3])
     compliance_tau[0, 0] = 1 / output['Tau_yz']
@@ -240,54 +227,66 @@ def read_results(script, x):
     print("Poisson's ratio v31: " + str(round(output['v31'], 3)))
     print("Poisson's ratio v32: " + str(round(output['v32'], 3)))
 
-    print("Compliance Matrix [1/GPa]: ")
+    print("Compliance Matrix [1/MPa]: ")
     numpy.set_printoptions(precision=2, suppress=True)
-    print(numpy.multiply(output['Compliance'], 1e9))
+    print(numpy.multiply(output['Compliance'], 1e3))
     return output
 
 
 # APPENDS RESULTS TO A CSV FILE AND A SERIALIZED PICKLE FILE
-def append_output_to_file(output, output_file):
+def append_output_to_file(options, output, output_file):
     result_file = open(output_file, 'a')
-    result_file.write(str(output['Step']) + ", " +
-                      str(output['Truss_Name']) + ", " +
-                      str(round(output['Fitness'], 3)) + ", " +
-                      str(round(output['Cell_Size'], 3)) + ", " +
-                      str(round(output['Strut_Thickness'] * 1e3, 3)) + ", ")
-    counter = 0
-    for cells in output['Pore_size']:
-        for pore in cells:
-            result_file.write(str(round(pore * 1e6, 3)) + ", ")
-            counter += 1
-    for i in range(0, 4 - counter):
-        result_file.write("None, ")
-    result_file.write(str(round(output['Sigma_z'] * 1e-3, 3)) + ", " +
-                      str(round(output['Sigma_y'] * 1e-3, 3)) + ", " +
-                      str(round(output['Sigma_x'] * 1e-3, 3)) + ", " +
-                      str(round(output['Tau_yz'] * 1e-3, 3)) + ", " +
-                      str(round(output['Tau_xz'] * 1e-3, 3)) + ", " +
-                      str(round(output['Tau_xy'] * 1e-3, 3)) + ", " +
-                      str(round(output['Bending_yz'] * 1e-12, 3)) + ", " +
-                      str(round(output['Bending_xz'] * 1e-12, 3)) + ", " +
-                      str(round(output['Bending_xy'] * 1e-12, 3)) + ", " +
-                      str(round(output['v21'], 3)) + ", " +
-                      str(round(output['v31'], 3)) + ", " +
-                      str(round(output['v32'], 3)) + ", ")
-    # str(round(output['Torsion_z'] * 1e-6, 3)) + ", " +
-    # str(round(output['Torsion_y'] * 1e-6, 3)) + ", " +
-    # str(round(output['Torsion_x'] * 1e-6, 3)) + ", ")
-
+    if options['output']['Step']:
+        result_file.write(str(output['Step']) + ", ")
+    if options['output']['Truss_Name']:
+        result_file.write(str(output['Truss_Name']) + ", ")
+    if options['output']['Fitness']:
+        result_file.write(str(round(output['Fitness'], 3)) + ", ")
+    if options['output']['Cell_size']:
+        result_file.write(str(round(output['Cell_Size'], 3)) + ", ")
+    if options['output']['Strut_Thickness']:
+        result_file.write(str(round(output['Strut_Thickness'] * 1e3, 3)) + ", ")
+    if options['output']['Pore_size']:
+        counter = 0
+        for cells in output['Pore_size']:
+            for pore in cells:
+                result_file.write(str(round(pore * 1e3, 3)) + ", ")
+                counter += 1
+        for i in range(0, 4 - counter):
+            result_file.write("None, ")
+    if options['output']["Young's Modulus"]:
+        result_file.write(str(round(output['Sigma_z'], 3)) + ", " +
+                          str(round(output['Sigma_y'], 3)) + ", " +
+                          str(round(output['Sigma_x'], 3)) + ", ")
+    if options['output']['Shearing Modulus']:
+        result_file.write(str(round(output['Tau_yz'], 3)) + ", " +
+                          str(round(output['Tau_xz'], 3)) + ", " +
+                          str(round(output['Tau_xy'], 3)) + ", ")
+    if options['output']["Poisson's Ratio"]:
+        result_file.write(str(round(output['v21'], 3)) + ", " +
+                          str(round(output['v31'], 3)) + ", " +
+                          str(round(output['v32'], 3)) + ", ")
     try:
-        result_file.write(str(round(output['Volume'], 3)) + ", " +
-                          str(round(output['Porosity'] * 100, 3)) + ", " +
-                          str(round(output['Void_ratio'] * 1, 3)) + ", " +
-                          str(round(output['Surface_Area'], 3)) + ", "
-                          )
+        if options['output']['Volume']:
+            result_file.write(str(round(output['Volume'], 3)) + ", ")
+        if options['output']['Porosity']:
+            result_file.write(str(round(output['Porosity'] * 100, 3)) + ", ")
+        if options['output']['Void_ratio']:
+            result_file.write(str(round(output['Void_ratio'] * 1, 3)) + ", ")
+        if options['output']['Surface_Area']:
+            result_file.write(str(round(output['Surface_Area'], 3)) + ", ")
     except KeyError:
-        result_file.write("None, None, None, None, ")
-
-    result_file.write(str(output['X']))
-    result_file.write("\n")
+        if options['output']['Volume']:
+            result_file.write("None, ")
+        if options['output']['Porosity']:
+            result_file.write("None, ")
+        if options['output']['Void_ratio']:
+            result_file.write("None, ")
+        if options['output']['Surface_Area']:
+            result_file.write("None, ")
+    if options['output']['X']:
+        result_file.write(str(output['X']))
+    result_file.write('\n')
     result_file.close()
 
     # APPENDS OUTPUT TO THE PICKLED OUTPUT
@@ -382,36 +381,17 @@ def objective_function(inputs, options):
         output = dict()
 
     # CALCULATE FITNESS
-
-    for variable in options['fitness_variables']:
-        fitness += (abs(output[variable] - options['fitness_variables'][variable][0]) *
-                    options['fitness_variables'][variable][1]) * options['fitness_variables'][variable][2]
-    fitness /= len(options['fitness_variables'])
-    # # Fit Bone Stiffness:
-    # if False:
-    #     try:
-    #         fitness += (abs(output['Sigma_z'] - 15e9) / 100e6 +
-    #                     abs(output['Sigma_y'] - 11.5e9) / 100e6 +
-    #                     abs(output['Sigma_x'] - 11.5e9) / 100e6)
-    #     except KeyError:
-    #         print("No Fitness")
-    #         fitness = 1e9
-    #     for values in inputs['strut_thickness_multiplicator']:
-    #         fitness += abs(1 / abs(values - 0.00050) * 1e-10)
-    #         # To encourage bigger struts and kill strut solutions equal 0
-    #
-    # # Maximize auxesis:
-    # if False:
-    #     fitness += output['v21'] + output['v31'] + output['v32']
-    #
-    # if True:
-    #     fitness += abs(output['Porosity'] - 0.6) / 1e-3
+    if options['method'] == 'optimization':
+        for variable in options['fitness_variables']:
+            fitness += (abs(output[variable] - options['fitness_variables'][variable][0]) *
+                        options['fitness_variables'][variable][1]) * options['fitness_variables'][variable][2]
+        fitness /= len(options['fitness_variables'])
 
     # SAFE OUTPUT INTO CSV FILE
     if options['read_output']:
         output['Step'] = universal_counter
         output['Fitness'] = fitness
-        append_output_to_file(output, inputs['output_file'] + '.csv')
+        append_output_to_file(options, output, inputs['output_file'] + '.csv')
 
     # SAFE INPUT VALUES AS A SERIALIZED PICKLE FILE
     pickle_input(inputs['strut_thickness_multiplicator'],
