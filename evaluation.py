@@ -89,7 +89,7 @@ def read_results(script, x):
         u = pickle._Unpickler(f)
         u.encoding = 'latin1'
         results = u.load()
-
+        # results = pickle.load(f)
     applied_force = 1  # [N]. This is also defined in Class_Script.py : def evaluate()
 
     output = dict()
@@ -289,14 +289,14 @@ def append_output_to_file(options, output, output_file):
     result_file.write('\n')
     result_file.close()
 
-    # APPENDS OUTPUT TO THE PICKLED OUTPUT
-    unpickle = pickle._Unpickler(open(str(output_file[:len(output_file) - 4]) + "_pickle", 'rb'))
-    unpickle.encoding = 'latin1'
-    output_old = unpickle.load()
-    output_old.append(output)
-    file = open(str(output_file[:len(output_file) - 4]) + "_pickle", 'wb')
-    pickle.dump(output_old, file)
-    file.close()
+    # # APPENDS OUTPUT TO THE PICKLED OUTPUT
+    # unpickle = pickle._Unpickler(open(str(output_file[:len(output_file) - 4]) + "_pickle", 'rb'))
+    # unpickle.encoding = 'latin1'
+    # output_old = unpickle.load()
+    # output_old.append(output)
+    # file = open(str(output_file[:len(output_file) - 4]) + "_pickle", 'wb')
+    # pickle.dump(output_old, file)
+    # file.close()
 
 
 # SAFES THE INPUT IN A SERIALIZED PICKLE FILE
@@ -352,7 +352,7 @@ def objective_function(inputs, options):
 
     # initialize.
     model_script = Script(filename=filename, truss=truss, material=inputs['material'],
-                          abaqus_version=options['abaqus_version'])
+                          abaqus_path=options['abaqus_path'], abaqus_version=options['abaqus_version'])
     # generate wireframe and evaluate.
     model_script.evaluate(create_steps=options['create_steps'], submit_job=options['submit_job'],
                           read_output=options['read_output'], number_of_cells=inputs['number_of_cells'])

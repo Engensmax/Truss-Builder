@@ -361,9 +361,8 @@ def generate_wireframe(filename, truss):
         "e = p.edges\n"
         "edges = e.getSequenceFromMask(mask=('[#7 ]', ), )\n"
         "p.Set(edges=edges, name='Wire-" + str(truss.name) + "')\n"
-                                                             "a = mdb.models['Model-1'].rootAssembly\n"
-                                                             "a.DatumCsysByDefault(CARTESIAN)\n")
-
+        "a = mdb.models['Model-1'].rootAssembly\n"
+        "a.DatumCsysByDefault(CARTESIAN)\n")
     file.close()
 
 
@@ -382,8 +381,8 @@ def assign_material_to_wire(filename, truss, material_name):
     file = open("".join(filename), "a")
 
     for cell in truss.cells:
-        list_of_nodes = list()
 
+        list_of_nodes = list()
         for node in truss.nodes:
             if cell.name == node[3].name:
                 list_of_nodes.append(node)
@@ -407,11 +406,9 @@ def assign_material_to_wire(filename, truss, material_name):
                        "', offset=0.0,"
                        "offsetType=MIDDLE_SURFACE, offsetField='',"
                        "thicknessAssignment=FROM_SECTION)\n"
-                       "p.assignBeamSectionOrientation(region=r, method=N1_COSINES, n1=(1.1, 0.9, 1.0))\n")
+                       "p.assignBeamSectionOrientation(region=r, method=N1_COSINES, n1=(5,7,3))\n")
             counter += 1
         del counter
-
-    file.write("p.assignBeamSectionOrientation(region=r, method=N1_COSINES, n1=(1.0, 1.0, 1.0))\n")
 
 
 # MESHES THE TRUSS
@@ -423,7 +420,7 @@ def mesh_part(filename, mesh_size):
                "p.seedPart(size=" + str(mesh_size) + ", deviationFactor=0.1, minSizeFactor=0.1)\n"
                "p.generateMesh()\n"
                "p.setElementType(regions=regionToolset.Region(p.edges), "
-               "elemTypes=(mesh.ElemType(elemCode=B32,elemLibrary=STANDARD),))\n")
+               "elemTypes=(mesh.ElemType(elemCode=B32,elemLibrary=STANDARD),))\n")  # B32
     file.close()
 
 
@@ -548,7 +545,7 @@ def read_odb_step(filename, step_name, job_name):
 
 class Script:
     # INITIALIZE THE SCRIPT
-    def __init__(self, filename, truss, material, abaqus_version):
+    def __init__(self, filename, truss, material, abaqus_path, abaqus_version):
         self.filename = filename
         self.truss = truss
         self.material = material
@@ -592,11 +589,10 @@ class Script:
             "from odbMaterial import *\n"
             "from odbSection import *\n"
             "import pickle\n"
-            "sys.path.insert(9, r'c:/SIMULIA/Abaqus/" + str(abaqus_version) +
+            "sys.path.insert(9, r'" + str(abaqus_path) + str(abaqus_version) +  # c:/SIMULIA/Abaqus
             "/code/python2.7/lib/abaqus_plugins/stlExport')\n"
             "import stlExport_kernel\n"
             "Mdb()\n"
-            "session.viewports['Viewport: 1'].viewportAnnotationOptions.setValues(compassPrivilegedPlane=XYPLANE)\n"
             "session.viewports['Viewport: 1'].viewportAnnotationOptions.setValues(compassPrivilegedPlane=XYPLANE)\n"
             "session.journalOptions.setValues(replayGeometry=COORDINATE, recoverGeometry=COORDINATE)\n"
             "results = dict()\n\n\n\n")
@@ -767,12 +763,12 @@ class Script:
                                        vertices=self.truss.find_points_in_plane(axis="z",
                                                                                 axis_value=-0.5 * self.truss.cell_size,
                                                                                 accuracy=accuracy),
-                                       direction='u1=0')
+                                       direction='u1=0, ur2=0')
             define_boundary_conditions(self.filename, step_name=step_name, affix='_X',
                                        vertices=self.truss.find_points_in_plane(axis="x",
                                                                                 axis_value=-0.5 * self.truss.cell_size,
                                                                                 accuracy=accuracy),
-                                       direction='u3=0')
+                                       direction='u3=0, ur2=0')
             define_boundary_conditions(self.filename, step_name=step_name, affix='_Y',
                                        vertices=self.truss.find_points_in_plane(axis="y",
                                                                                 axis_value=-0.5 * self.truss.cell_size,
@@ -807,12 +803,12 @@ class Script:
                                        vertices=self.truss.find_points_in_plane(axis="z",
                                                                                 axis_value=-0.5 * self.truss.cell_size,
                                                                                 accuracy=accuracy),
-                                       direction='u2=0')
+                                       direction='u2=0, ur1=0')
             define_boundary_conditions(self.filename, step_name=step_name, affix='_Y',
                                        vertices=self.truss.find_points_in_plane(axis="y",
                                                                                 axis_value=-0.5 * self.truss.cell_size,
                                                                                 accuracy=accuracy),
-                                       direction='u3=0')
+                                       direction='u3=0, ur1=0')
             define_boundary_conditions(self.filename, step_name=step_name, affix='_X',
                                        vertices=self.truss.find_points_in_plane(axis="x",
                                                                                 axis_value=-0.5 * self.truss.cell_size,
@@ -847,12 +843,12 @@ class Script:
                                        vertices=self.truss.find_points_in_plane(axis="y",
                                                                                 axis_value=-0.5 * self.truss.cell_size,
                                                                                 accuracy=accuracy),
-                                       direction='u1=0')
+                                       direction='u1=0, ur3=0')
             define_boundary_conditions(self.filename, step_name=step_name, affix='_X',
                                        vertices=self.truss.find_points_in_plane(axis="x",
                                                                                 axis_value=-0.5 * self.truss.cell_size,
                                                                                 accuracy=accuracy),
-                                       direction='u2=0')
+                                       direction='u2=0, ur3=0')
             define_boundary_conditions(self.filename, step_name=step_name, affix='_Z',
                                        vertices=self.truss.find_points_in_plane(axis="z",
                                                                                 axis_value=-0.5 * self.truss.cell_size,
@@ -882,6 +878,6 @@ class Script:
 
         file = open("".join(self.filename), "a")
         file.write("result_file = open('" + self.filename[0] + self.filename[1] + "_results', 'wb')\n"
-                                                                                  "pickle.dump(results, result_file)\n"
-                                                                                  "result_file.close()\n")
+                   "pickle.dump(results, result_file)\n"
+                   "result_file.close()\n")
         file.close()

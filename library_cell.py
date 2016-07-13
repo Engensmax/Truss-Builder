@@ -643,6 +643,68 @@ def generate_cell(cell_name, affix, strut_thicknesses, cell_size, ratio):
         # It is described by the diameter of the biggest fitting sphere in the cell
         pore_size.append(math.sqrt(2) / 3)
 
+    elif cell_name == "truncated_octahedron":
+        # NODES: Describe the nodes in cartesian coordinates.
+        p = ratio[0] / 2
+        cell_node_coordinates = [[1 / 2 - p, 1 / 2, 0], [1 / 2, 1 / 2 - p, 0], [1 / 2 + p, 1 / 2, 0], [1 / 2,
+                                                                                                       1 / 2 + p, 0],
+                                 [0, 1 / 2, 1 / 2 - p], [1 / 2, 0, 1 / 2 - p], [1, 1 / 2, 1 / 2 - p], [1 / 2,
+                                                                                                       1, 1 / 2 - p],
+                                 [0, 1 / 2 + p, 1 / 2], [0, 1 / 2 - p, 1 / 2], [1 / 2 - p, 0, 1 / 2], [1 / 2 + p,
+                                                                                                       0, 1 / 2],
+                                 [1, 1 / 2 - p, 1 / 2], [1, 1 / 2 + p, 1 / 2], [1 / 2 + p, 1, 1 / 2], [1 / 2 - p,
+                                                                                                       1, 1 / 2],
+                                 [0, 1 / 2, 1 / 2 + p], [1 / 2, 0, 1 / 2 + p], [1, 1 / 2, 1 / 2 + p], [1 / 2,
+                                                                                                       1, 1 / 2 + p],
+                                 [1 / 2 - p, 1 / 2, 1], [1 / 2, 1 / 2 - p, 1], [1 / 2 + p, 1 / 2, 1], [1 / 2,
+                                                                                                       1 / 2 + p, 1]]
+        for x in range(0, len(cell_node_coordinates)):
+            for y in range(0, 3):
+                cell_node_coordinates[x][y] -= 1 / 2
+
+        # CONNECTIONS: Describes the connections via the nodes.
+        node_connections = [[0, 1, strut_thicknesses[0]],
+                            [1, 2, strut_thicknesses[0]],
+                            [2, 3, strut_thicknesses[0]],
+                            [0, 3, strut_thicknesses[0]],
+                            [0, 4, strut_thicknesses[1]],
+                            [1, 5, strut_thicknesses[2]],
+                            [2, 6, strut_thicknesses[1]],
+                            [3, 7, strut_thicknesses[2]],
+                            [4, 8, strut_thicknesses[3]],
+                            [4, 9, strut_thicknesses[3]],
+                            [5, 10, strut_thicknesses[4]],
+                            [5, 11, strut_thicknesses[4]],
+                            [6, 12, strut_thicknesses[3]],
+                            [6, 13, strut_thicknesses[3]],
+                            [7, 14, strut_thicknesses[4]],
+                            [7, 15, strut_thicknesses[4]],
+                            [8, 16, strut_thicknesses[3]],
+                            [9, 16, strut_thicknesses[3]],
+                            [10, 17, strut_thicknesses[4]],
+                            [11, 17, strut_thicknesses[4]],
+                            [12, 18, strut_thicknesses[3]],
+                            [13, 18, strut_thicknesses[3]],
+                            [14, 19, strut_thicknesses[4]],
+                            [15, 19, strut_thicknesses[4]],
+                            [16, 20, strut_thicknesses[1]],
+                            [17, 21, strut_thicknesses[2]],
+                            [18, 22, strut_thicknesses[1]],
+                            [19, 23, strut_thicknesses[2]],
+                            [20, 21, strut_thicknesses[0]],
+                            [21, 22, strut_thicknesses[0]],
+                            [22, 23, strut_thicknesses[0]],
+                            [20, 23, strut_thicknesses[0]],
+                            [9, 10, strut_thicknesses[5]],
+                            [11, 12, strut_thicknesses[5]],
+                            [13, 14, strut_thicknesses[5]],
+                            [15, 8, strut_thicknesses[5]],
+                            ]
+
+        # PORE SIZE: Describes the pore size of the Cell in standard size 1.
+        # It is described by the diameter of the biggest fitting sphere in the cell
+        pore_size.append(ratio[0])
+
     elif cell_name == "templar_crosse":
         # p = ratio
         # p = 0.3  # 0-1
